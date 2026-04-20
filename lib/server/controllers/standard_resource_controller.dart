@@ -5,14 +5,27 @@ import '../../transport/transport_models.dart';
 import '../data/resource_storage.dart';
 import '../utils/rdf_utils.dart';
 
-class ThingController {
-  final ResourceStorage _storage;
+typedef FieldMapper = Set<NamedNode> Function(Iterable<String> fields);
 
-  ThingController(this._storage);
+final class StandardResourceController {
+  final ResourceStorage _storage;
+  final String _collectionName;
+  final NamedNode _resourceClass;
+  final FieldMapper _fieldMapper;
+
+  StandardResourceController({
+    required ResourceStorage storage,
+    required String collectionName,
+    required NamedNode resourceClass,
+    required FieldMapper fieldMapper,
+  }) : _storage = storage,
+       _collectionName = collectionName,
+       _resourceClass = resourceClass,
+       _fieldMapper = fieldMapper;
 
   Future<TransportResponse> handleList(Uri uri) async {
     try {
-      final dataset = await _storage.queryResources(type: Vocab.thingClass);
+      final dataset = await _storage.queryResources(type: _resourceClass);
       // Pagination can be applied here using uri.queryParameters
       return TransportResponse(
         statusCode: 200,
@@ -31,7 +44,7 @@ class ThingController {
       final requestDataset = MemoryDataset.fromIterable(
         nQuadsCodec.decode(body),
       );
-      final newName = ResourceName.generate('things').toString();
+      final newName = ResourceName.generate(_collectionName).toString();
       final targetIri = Vocab.getResourceIri(newName);
       final oldIri = Vocab.getResourceIri('');
 
@@ -85,7 +98,7 @@ class ThingController {
       final updateMask = uri.queryParameters['updateMask']?.split(',');
       Set<NamedNode>? updatePredicates;
       if (updateMask != null && updateMask.isNotEmpty) {
-        updatePredicates = Vocab.mapFieldsToPredicates(updateMask);
+        updatePredicates = _fieldMapper(updateMask);
       }
 
       final requestDataset = MemoryDataset.fromIterable(

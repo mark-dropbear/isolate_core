@@ -1,13 +1,14 @@
 import 'package:logging/logging.dart';
 import '../../api/models/resource_name.dart';
 import '../../transport/transport_models.dart';
-import '../controllers/thing_controller.dart';
+import '../controllers/standard_resource_controller.dart';
 
 class ServerRouter {
   final _logger = Logger('ServerRouter');
-  final ThingController _thingController;
+  final StandardResourceController _thingController;
 
-  ServerRouter(this._thingController);
+  ServerRouter({required StandardResourceController thingController})
+    : _thingController = thingController;
 
   Future<TransportResponse> route(TransportRequest request) async {
     _logger.info('Routing request: ${request.method} ${request.path}');

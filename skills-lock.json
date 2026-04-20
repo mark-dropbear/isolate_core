@@ -1,6 +1,56 @@
 {
   "version": 1,
   "skills": {
+    "dart-api-design": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "00f2a541ca05387967b6e44afbce8b3e235a45225e06a376ec98e91116b76c09"
+    },
+    "dart-async-programming": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "52f989f2cb1121b8c5122d4cf6c9dbe7283523e7144e67e1f86640d33a82ce28"
+    },
+    "dart-code-generation": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "815a84815bbe6681129a6d883278fa6d251d3f4e5a6509e8e1ca74cab4422279"
+    },
+    "dart-concurrency-isolates": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "a3e7ff69a58c462d3ea94d7092d1d03e21eeb43bdbb21174400a111da4a96721"
+    },
+    "dart-documentation": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "5eb2845edf402683555208ede425b217484fc1fe21f63131fefe9b249f97697a"
+    },
+    "dart-effective-style": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "3b11a0ad963151c12bbf0302cd526dcfdfa6659e194455f168d8441fae60e895"
+    },
+    "dart-idiomatic-usage": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "c45023b434e63316dd209afc094f7412fd99683869b917f140918d0c065406c8"
+    },
+    "dart-language-syntax": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "457294ca1c8e21c0ceb643ded8dfa1a2df1a542bea5825c95d331b99d119bd25"
+    },
+    "dart-static-analysis": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "6258439460032ed8204d18abb0f09112ad7969d2497221693b302ce800f12106"
+    },
+    "dart-testing": {
+      "source": "dart-lang/skills",
+      "sourceType": "github",
+      "computedHash": "2d8a5d92cfa90dd5ad13f8f38606bdcb6edec8fc344fde02f51475a29f05d87a"
+    },
     "flutter-adding-home-screen-widgets": {
       "source": "flutter/skills",
       "sourceType": "github",
