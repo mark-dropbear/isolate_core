@@ -16,10 +16,12 @@ class ThingApiService {
     _logger.info('listThings()');
     String path = '/things';
     final queryParams = <String>[];
-    if (request.pageSize != null)
+    if (request.pageSize != null) {
       queryParams.add('pageSize=${request.pageSize}');
-    if (request.pageToken != null)
+    }
+    if (request.pageToken != null) {
       queryParams.add('pageToken=${request.pageToken}');
+    }
     if (queryParams.isNotEmpty) {
       path += '?${queryParams.join('&')}';
     }

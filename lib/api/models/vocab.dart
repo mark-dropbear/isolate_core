@@ -17,8 +17,9 @@ class Vocab {
 
   static String getResourceName(Term node) {
     if (node is! NamedNode) throw Exception('Node is not a NamedNode');
-    if (!node.value.startsWith(apiPrefix))
+    if (!node.value.startsWith(apiPrefix)) {
       throw Exception('Node does not have api prefix');
+    }
     return node.value.substring(apiPrefix.length);
   }
 
