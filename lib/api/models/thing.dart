@@ -28,6 +28,16 @@ class Thing {
       return Thing(name: name, displayName: '');
     }
 
+    // Verify type
+    final types = graph.match(
+      subject: subject,
+      predicate: Rdf.type,
+      object: Vocab.thingClass,
+    );
+    if (types.isEmpty) {
+      throw Exception('Graph does not represent a Thing');
+    }
+
     final displayNames = graph.match(
       subject: subject,
       predicate: Vocab.displayName,
@@ -47,7 +57,7 @@ class Thing {
     dataset.add(
       Quad(
         subject: subject,
-        predicate: NamedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+        predicate: Rdf.type,
         object: Vocab.thingClass,
         graph: graphName,
       ),

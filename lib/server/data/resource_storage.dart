@@ -2,6 +2,7 @@ import 'package:rdf_dart/rdf_dart.dart';
 
 abstract class ResourceStorage {
   Future<Dataset> getAllResources();
+  Future<Dataset> queryResources({NamedNode? type});
   Future<Dataset?> getResource(NamedNode graphIri);
   Future<Dataset> saveResource(NamedNode graphIri, Dataset dataset);
   Future<Dataset> updateResource(

@@ -33,6 +33,37 @@ class RdfResourceStorage implements ResourceStorage {
   }
 
   @override
+  Future<Dataset> queryResources({NamedNode? type}) async {
+    final dataset = _readData();
+    if (type == null) {
+      return dataset;
+    }
+
+    final matchingGraphs = dataset
+        .where((q) => q.predicate == Rdf.type && q.object == type)
+        .map((q) => q.graph)
+        .toSet();
+
+    final result = MemoryDataset();
+    for (final graph in matchingGraphs) {
+      if (graph is NamedNode) {
+        final g = dataset.getGraph(graph);
+        for (final t in g) {
+          result.add(
+            Quad(
+              subject: t.subject,
+              predicate: t.predicate,
+              object: t.object,
+              graph: graph,
+            ),
+          );
+        }
+      }
+    }
+    return result;
+  }
+
+  @override
   Future<Dataset?> getResource(NamedNode graphIri) async {
     final dataset = _readData();
     final graph = dataset.getGraph(graphIri);

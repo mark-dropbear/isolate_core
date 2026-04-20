@@ -12,7 +12,7 @@ class ThingController {
 
   Future<TransportResponse> handleList(Uri uri) async {
     try {
-      final dataset = await _storage.getAllResources();
+      final dataset = await _storage.queryResources(type: Vocab.thingClass);
       // Pagination can be applied here using uri.queryParameters
       return TransportResponse(
         statusCode: 200,
