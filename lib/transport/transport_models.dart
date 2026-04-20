@@ -12,12 +12,7 @@ class TransportRequest {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'method': method,
-      'path': path,
-      'body': body,
-      'headers': headers,
-    };
+    return {'method': method, 'path': path, 'body': body, 'headers': headers};
   }
 
   factory TransportRequest.fromJson(Map<String, dynamic> json) {
@@ -25,7 +20,8 @@ class TransportRequest {
       method: json['method'] as String,
       path: json['path'] as String,
       body: json['body'] as String?,
-      headers: (json['headers'] as Map<String, dynamic>?)?.cast<String, String>(),
+      headers: (json['headers'] as Map<String, dynamic>?)
+          ?.cast<String, String>(),
     );
   }
 }
@@ -34,16 +30,10 @@ class TransportResponse {
   final int statusCode;
   final String? body;
 
-  const TransportResponse({
-    required this.statusCode,
-    this.body,
-  });
+  const TransportResponse({required this.statusCode, this.body});
 
   Map<String, dynamic> toJson() {
-    return {
-      'statusCode': statusCode,
-      if (body != null) 'body': body,
-    };
+    return {'statusCode': statusCode, if (body != null) 'body': body};
   }
 
   factory TransportResponse.fromJson(Map<String, dynamic> json) {

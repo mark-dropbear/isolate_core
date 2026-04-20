@@ -10,7 +10,9 @@ class SaveThingUseCase {
     if (existingThing == null) {
       return _repository.createThing(displayName);
     } else {
-      return _repository.updateThing(existingThing.copyWith(displayName: displayName));
+      return _repository.updateThing(
+        existingThing.copyWith(displayName: displayName),
+      );
     }
   }
 }

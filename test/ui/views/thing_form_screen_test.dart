@@ -14,43 +14,49 @@ void main() {
 
     setUp(() {
       fakeRepo = FakeThingRepository();
-      viewModel = ThingDetailViewModel(
-        SaveThingUseCase(fakeRepo),
-      );
+      viewModel = ThingDetailViewModel(SaveThingUseCase(fakeRepo));
     });
 
-    testWidgets('renders create mode when no existing thing is provided', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: ThingFormScreen(viewModel: viewModel),
-      ));
+    testWidgets('renders create mode when no existing thing is provided', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(home: ThingFormScreen(viewModel: viewModel)),
+      );
 
       expect(find.text('Create Thing'), findsOneWidget);
       expect(find.text('Save'), findsOneWidget);
-      
+
       // Text field should be empty
       final textField = tester.widget<TextField>(find.byType(TextField));
       expect(textField.controller?.text, isEmpty);
     });
 
-    testWidgets('renders edit mode when existing thing is provided', (WidgetTester tester) async {
+    testWidgets('renders edit mode when existing thing is provided', (
+      WidgetTester tester,
+    ) async {
       const existing = Thing(name: 'things/1', displayName: 'Existing Apple');
-      
-      await tester.pumpWidget(MaterialApp(
-        home: ThingFormScreen(viewModel: viewModel, thing: existing),
-      ));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ThingFormScreen(viewModel: viewModel, thing: existing),
+        ),
+      );
 
       expect(find.text('Edit Thing'), findsOneWidget);
       expect(find.text('Save'), findsOneWidget);
-      
+
       // Text field should be populated
       final textField = tester.widget<TextField>(find.byType(TextField));
       expect(textField.controller?.text, 'Existing Apple');
     });
 
-    testWidgets('filling form and tapping create saves the thing', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: ThingFormScreen(viewModel: viewModel),
-      ));
+    testWidgets('filling form and tapping create saves the thing', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(home: ThingFormScreen(viewModel: viewModel)),
+      );
 
       await tester.enterText(find.byType(TextField), 'New Banana');
       await tester.pump(); // Register the text input
@@ -63,13 +69,17 @@ void main() {
       expect(things.first.displayName, 'New Banana');
     });
 
-    testWidgets('filling form and tapping update modifies existing thing', (WidgetTester tester) async {
+    testWidgets('filling form and tapping update modifies existing thing', (
+      WidgetTester tester,
+    ) async {
       const existing = Thing(name: 'things/1', displayName: 'Old Apple');
       fakeRepo.seed([existing]);
 
-      await tester.pumpWidget(MaterialApp(
-        home: ThingFormScreen(viewModel: viewModel, thing: existing),
-      ));
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ThingFormScreen(viewModel: viewModel, thing: existing),
+        ),
+      );
 
       await tester.enterText(find.byType(TextField), 'Fresh Apple');
       await tester.pump();

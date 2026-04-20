@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 class ThingRepositoryImpl implements ThingRepository {
   final _logger = Logger('ThingRepositoryImpl');
   final ThingApiService _apiService;
-  
+
   ThingRepositoryImpl(this._apiService);
 
   @override
@@ -33,10 +33,9 @@ class ThingRepositoryImpl implements ThingRepository {
   @override
   Future<Thing> updateThing(Thing thing) async {
     _logger.info('updateThing(${thing.name})');
-    return _apiService.updateThing(UpdateThingRequest(
-      thing: thing,
-      updateMask: ['displayName'],
-    ));
+    return _apiService.updateThing(
+      UpdateThingRequest(thing: thing, updateMask: ['displayName']),
+    );
   }
 
   @override

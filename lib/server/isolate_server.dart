@@ -45,7 +45,7 @@ void isolateServerEntry(SendPort mainSendPort) {
   final FileSystem fs = MemoryFileSystem();
   final dataFile = fs.file('/things.nq');
   final storage = RdfResourceStorage(dataFile);
-  
+
   final apiServer = ApiServer(storage: storage);
 
   workerReceivePort.listen((message) async {

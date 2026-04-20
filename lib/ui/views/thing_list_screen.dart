@@ -42,14 +42,17 @@ class _ThingListScreenState extends State<ThingListScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (widget.viewModel.error != null && widget.viewModel.things.isEmpty) {
+          if (widget.viewModel.error != null &&
+              widget.viewModel.things.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Error: ${widget.viewModel.error}',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -82,7 +85,8 @@ class _ThingListScreenState extends State<ThingListScreen> {
                       onPressed: () async {
                         await Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (ctx) => widget.formScreenBuilder(ctx, thing),
+                            builder: (ctx) =>
+                                widget.formScreenBuilder(ctx, thing),
                           ),
                         );
                         widget.viewModel.loadThings();

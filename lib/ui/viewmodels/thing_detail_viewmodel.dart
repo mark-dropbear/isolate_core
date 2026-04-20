@@ -6,7 +6,7 @@ import '../../domain/usecases/save_thing_usecase.dart';
 class ThingDetailViewModel extends ChangeNotifier {
   final _logger = Logger('ThingDetailViewModel');
   final SaveThingUseCase _saveThing;
-  
+
   bool isLoading = false;
   String? error;
 

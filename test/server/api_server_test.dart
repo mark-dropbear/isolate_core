@@ -23,7 +23,10 @@ void main() {
       final response = await apiServer.handleRequest(req);
 
       expect(response.statusCode, 200);
-      expect(response.body, ''); // Empty memory dataset encoded returns empty string or empty quads
+      expect(
+        response.body,
+        '',
+      ); // Empty memory dataset encoded returns empty string or empty quads
     });
 
     test('POST /things creates a thing with a generated name', () async {
@@ -36,12 +39,17 @@ void main() {
       final response = await apiServer.handleRequest(req);
 
       expect(response.statusCode, 201);
-      final dataset = MemoryDataset.fromIterable(nQuadsCodec.decode(response.body as String));
+      final dataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(response.body as String),
+      );
       expect(dataset.isNotEmpty, isTrue);
       // Graph name should be generated
       final graphNames = dataset.map((q) => q.graph).whereType<NamedNode>();
       expect(graphNames.isNotEmpty, isTrue);
-      expect(graphNames.first.value, startsWith('https://example.com/api/things/'));
+      expect(
+        graphNames.first.value,
+        startsWith('https://example.com/api/things/'),
+      );
     });
 
     test('GET /things/{id} retrieves the created thing', () async {
@@ -53,8 +61,13 @@ void main() {
         body: nQuadsCodec.encode(thing.toDataset()),
       );
       final createRes = await apiServer.handleRequest(createReq);
-      final createdDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(createRes.body as String));
-      final graphNameNode = createdDataset.map((q) => q.graph).whereType<NamedNode>().first;
+      final createdDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(createRes.body as String),
+      );
+      final graphNameNode = createdDataset
+          .map((q) => q.graph)
+          .whereType<NamedNode>()
+          .first;
       final createdName = Vocab.getResourceName(graphNameNode);
 
       // 2. Fetch
@@ -62,7 +75,9 @@ void main() {
       final getRes = await apiServer.handleRequest(getReq);
 
       expect(getRes.statusCode, 200);
-      final getDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(getRes.body as String));
+      final getDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(getRes.body as String),
+      );
       expect(getDataset.isNotEmpty, isTrue);
     });
 
@@ -75,8 +90,13 @@ void main() {
         body: nQuadsCodec.encode(thing.toDataset()),
       );
       final createRes = await apiServer.handleRequest(createReq);
-      final createdDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(createRes.body as String));
-      final graphNameNode = createdDataset.map((q) => q.graph).whereType<NamedNode>().first;
+      final createdDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(createRes.body as String),
+      );
+      final graphNameNode = createdDataset
+          .map((q) => q.graph)
+          .whereType<NamedNode>()
+          .first;
       final createdName = Vocab.getResourceName(graphNameNode);
 
       // 2. Patch
@@ -89,7 +109,9 @@ void main() {
       final patchRes = await apiServer.handleRequest(patchReq);
 
       expect(patchRes.statusCode, 200);
-      final patchDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(patchRes.body as String));
+      final patchDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(patchRes.body as String),
+      );
       final patchedThing = Thing.fromDataset(patchDataset, createdName);
       expect(patchedThing.displayName, 'New Name');
     });
@@ -103,12 +125,20 @@ void main() {
         body: nQuadsCodec.encode(thing.toDataset()),
       );
       final createRes = await apiServer.handleRequest(createReq);
-      final createdDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(createRes.body as String));
-      final graphNameNode = createdDataset.map((q) => q.graph).whereType<NamedNode>().first;
+      final createdDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(createRes.body as String),
+      );
+      final graphNameNode = createdDataset
+          .map((q) => q.graph)
+          .whereType<NamedNode>()
+          .first;
       final createdName = Vocab.getResourceName(graphNameNode);
 
       // 2. Delete
-      final deleteReq = TransportRequest(method: 'DELETE', path: '/$createdName');
+      final deleteReq = TransportRequest(
+        method: 'DELETE',
+        path: '/$createdName',
+      );
       final deleteRes = await apiServer.handleRequest(deleteReq);
 
       expect(deleteRes.statusCode, 204);

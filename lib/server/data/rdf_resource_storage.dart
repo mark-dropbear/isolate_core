@@ -39,7 +39,7 @@ class RdfResourceStorage implements ResourceStorage {
     if (graph.isEmpty) {
       return null;
     }
-    
+
     final result = MemoryDataset();
     for (final t in graph) {
       result.add(
@@ -69,14 +69,16 @@ class RdfResourceStorage implements ResourceStorage {
     Set<NamedNode>? updatePredicates,
   }) async {
     var currentDataset = _readData();
-    
+
     final existingGraph = currentDataset.getGraph(graphIri);
     if (existingGraph.isEmpty) {
       throw Exception('Resource not found');
     }
 
     if (updatePredicates == null || updatePredicates.isEmpty) {
-      final updatedQuads = currentDataset.where((q) => q.graph != graphIri).toList();
+      final updatedQuads = currentDataset
+          .where((q) => q.graph != graphIri)
+          .toList();
       currentDataset = MemoryDataset.fromIterable(updatedQuads);
       currentDataset.addAll(dataset);
     } else {
@@ -126,7 +128,9 @@ class RdfResourceStorage implements ResourceStorage {
   @override
   Future<void> deleteResource(NamedNode graphIri) async {
     var currentDataset = _readData();
-    final updatedQuads = currentDataset.where((q) => q.graph != graphIri).toList();
+    final updatedQuads = currentDataset
+        .where((q) => q.graph != graphIri)
+        .toList();
     currentDataset = MemoryDataset.fromIterable(updatedQuads);
     _writeData(currentDataset);
   }

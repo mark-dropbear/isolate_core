@@ -38,19 +38,21 @@ void main() async {
   // Initialize transport and data layers
   final transportClient = IsolateTransportClient();
   await transportClient.initialize();
-  
+
   final apiService = ThingApiService(transportClient);
   final repository = ThingRepositoryImpl(apiService);
-  
+
   final getThingsUseCase = GetThingsUseCase(repository);
   final deleteThingUseCase = DeleteThingUseCase(repository);
   final saveThingUseCase = SaveThingUseCase(repository);
 
-  runApp(MyApp(
-    getThingsUseCase: getThingsUseCase,
-    deleteThingUseCase: deleteThingUseCase,
-    saveThingUseCase: saveThingUseCase,
-  ));
+  runApp(
+    MyApp(
+      getThingsUseCase: getThingsUseCase,
+      deleteThingUseCase: deleteThingUseCase,
+      saveThingUseCase: saveThingUseCase,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

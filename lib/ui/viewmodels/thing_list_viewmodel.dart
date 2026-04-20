@@ -8,7 +8,7 @@ class ThingListViewModel extends ChangeNotifier {
   final _logger = Logger('ThingListViewModel');
   final GetThingsUseCase _getThings;
   final DeleteThingUseCase _deleteThing;
-  
+
   List<Thing> things = [];
   bool isLoading = false;
   String? error;

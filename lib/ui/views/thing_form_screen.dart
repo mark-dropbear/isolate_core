@@ -6,11 +6,7 @@ class ThingFormScreen extends StatefulWidget {
   final ThingDetailViewModel viewModel;
   final Thing? thing;
 
-  const ThingFormScreen({
-    super.key,
-    required this.viewModel,
-    this.thing,
-  });
+  const ThingFormScreen({super.key, required this.viewModel, this.thing});
 
   @override
   State<ThingFormScreen> createState() => _ThingFormScreenState();
@@ -22,7 +18,9 @@ class _ThingFormScreenState extends State<ThingFormScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.thing?.displayName ?? '');
+    _nameController = TextEditingController(
+      text: widget.thing?.displayName ?? '',
+    );
   }
 
   @override
@@ -47,7 +45,9 @@ class _ThingFormScreenState extends State<ThingFormScreen> {
                 if (widget.viewModel.error != null) ...[
                   Text(
                     'Error: ${widget.viewModel.error}',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                   const SizedBox(height: 16),
                 ],

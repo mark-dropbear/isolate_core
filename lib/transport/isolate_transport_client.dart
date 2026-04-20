@@ -18,7 +18,10 @@ class IsolateTransportClient implements TransportClient {
   @override
   Future<void> initialize() async {
     _logger.info('Initializing isolate server...');
-    _isolate = await Isolate.spawn(isolateServerEntry, _mainReceivePort.sendPort);
+    _isolate = await Isolate.spawn(
+      isolateServerEntry,
+      _mainReceivePort.sendPort,
+    );
 
     _mainReceivePort.listen((message) {
       if (message is SendPort) {
@@ -39,8 +42,10 @@ class IsolateTransportClient implements TransportClient {
 
     final responsePort = ReceivePort();
     final requestId = const Uuid().v4();
-    
-    _logger.fine('Sending request [$requestId]: ${request.method} ${request.path}');
+
+    _logger.fine(
+      'Sending request [$requestId]: ${request.method} ${request.path}',
+    );
 
     final message = IsolateServerMessage(
       id: requestId,
@@ -53,7 +58,7 @@ class IsolateTransportClient implements TransportClient {
     final response = await responsePort.first as TransportResponse;
     _logger.fine('Received response [$requestId]: ${response.statusCode}');
     responsePort.close();
-    
+
     return response;
   }
 

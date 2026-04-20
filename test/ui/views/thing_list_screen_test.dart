@@ -21,13 +21,17 @@ void main() {
       );
     });
 
-    testWidgets('renders empty state when no things exist', (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: ThingListScreen(
-          viewModel: viewModel,
-          formScreenBuilder: (ctx, thing) => Container(),
+    testWidgets('renders empty state when no things exist', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ThingListScreen(
+            viewModel: viewModel,
+            formScreenBuilder: (ctx, thing) => Container(),
+          ),
         ),
-      ));
+      );
 
       // Need to pump to allow the Future in initState to complete
       await tester.pumpAndSettle();
@@ -42,12 +46,14 @@ void main() {
         const Thing(name: 'things/2', displayName: 'Banana'),
       ]);
 
-      await tester.pumpWidget(MaterialApp(
-        home: ThingListScreen(
-          viewModel: viewModel,
-          formScreenBuilder: (ctx, thing) => Container(),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ThingListScreen(
+            viewModel: viewModel,
+            formScreenBuilder: (ctx, thing) => Container(),
+          ),
         ),
-      ));
+      );
 
       await tester.pumpAndSettle();
 
@@ -56,17 +62,19 @@ void main() {
       expect(find.byType(ListTile), findsNWidgets(2));
     });
 
-    testWidgets('tapping delete icon removes the thing', (WidgetTester tester) async {
-      fakeRepo.seed([
-        const Thing(name: 'things/1', displayName: 'Apple'),
-      ]);
+    testWidgets('tapping delete icon removes the thing', (
+      WidgetTester tester,
+    ) async {
+      fakeRepo.seed([const Thing(name: 'things/1', displayName: 'Apple')]);
 
-      await tester.pumpWidget(MaterialApp(
-        home: ThingListScreen(
-          viewModel: viewModel,
-          formScreenBuilder: (ctx, thing) => Container(),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ThingListScreen(
+            viewModel: viewModel,
+            formScreenBuilder: (ctx, thing) => Container(),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Apple'), findsOneWidget);

@@ -28,15 +28,24 @@ class ThingController {
       final body = request.body;
       if (body == null) return const TransportResponse(statusCode: 400);
 
-      final requestDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(body));
+      final requestDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(body),
+      );
       final newName = ResourceName.generate('things').toString();
       final targetIri = Vocab.getResourceIri(newName);
       final oldIri = Vocab.getResourceIri('');
 
-      final rewrittenDataset = RdfUtils.rewriteResourceIri(requestDataset, oldIri, targetIri);
-      
+      final rewrittenDataset = RdfUtils.rewriteResourceIri(
+        requestDataset,
+        oldIri,
+        targetIri,
+      );
+
       final created = await _storage.saveResource(targetIri, rewrittenDataset);
-      return TransportResponse(statusCode: 201, body: nQuadsCodec.encode(created));
+      return TransportResponse(
+        statusCode: 201,
+        body: nQuadsCodec.encode(created),
+      );
     } catch (e) {
       return const TransportResponse(statusCode: 500);
     }
@@ -49,13 +58,20 @@ class ThingController {
       if (dataset == null) {
         return const TransportResponse(statusCode: 404);
       }
-      return TransportResponse(statusCode: 200, body: nQuadsCodec.encode(dataset));
+      return TransportResponse(
+        statusCode: 200,
+        body: nQuadsCodec.encode(dataset),
+      );
     } catch (e) {
       return const TransportResponse(statusCode: 500);
     }
   }
 
-  Future<TransportResponse> handleUpdate(String name, TransportRequest request, Uri uri) async {
+  Future<TransportResponse> handleUpdate(
+    String name,
+    TransportRequest request,
+    Uri uri,
+  ) async {
     try {
       final body = request.body;
       if (body == null) return const TransportResponse(statusCode: 400);
@@ -71,11 +87,20 @@ class ThingController {
       if (updateMask != null && updateMask.isNotEmpty) {
         updatePredicates = Vocab.mapFieldsToPredicates(updateMask);
       }
-      
-      final requestDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(body));
 
-      final result = await _storage.updateResource(targetIri, requestDataset, updatePredicates: updatePredicates);
-      return TransportResponse(statusCode: 200, body: nQuadsCodec.encode(result));
+      final requestDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(body),
+      );
+
+      final result = await _storage.updateResource(
+        targetIri,
+        requestDataset,
+        updatePredicates: updatePredicates,
+      );
+      return TransportResponse(
+        statusCode: 200,
+        body: nQuadsCodec.encode(result),
+      );
     } catch (e) {
       return const TransportResponse(statusCode: 500);
     }

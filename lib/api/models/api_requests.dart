@@ -38,15 +38,16 @@ class ListThingsResponse {
 
   factory ListThingsResponse.fromDataset(Dataset dataset) {
     final List<Thing> things = [];
-    final graphNames = dataset.map((q) => q.graph).whereType<NamedNode>().toSet();
-    
+    final graphNames = dataset
+        .map((q) => q.graph)
+        .whereType<NamedNode>()
+        .toSet();
+
     for (final graphName in graphNames) {
       final resourceName = Vocab.getResourceName(graphName);
       things.add(Thing.fromDataset(dataset, resourceName));
     }
-    
-    return ListThingsResponse(
-      things: things,
-    );
+
+    return ListThingsResponse(things: things);
   }
 }

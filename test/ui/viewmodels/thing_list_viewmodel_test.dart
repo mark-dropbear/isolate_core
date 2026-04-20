@@ -36,7 +36,7 @@ void main() {
 
       // Trigger load
       final future = viewModel.loadThings();
-      
+
       // Should be loading
       expect(viewModel.isLoading, isTrue);
 
@@ -50,16 +50,14 @@ void main() {
     });
 
     test('deleteThing() removes the thing and updates state', () async {
-      fakeRepo.seed([
-        const Thing(name: 'things/1', displayName: 'Thing 1'),
-      ]);
+      fakeRepo.seed([const Thing(name: 'things/1', displayName: 'Thing 1')]);
       await viewModel.loadThings();
       expect(viewModel.things.length, 1);
 
       await viewModel.deleteThing('things/1');
 
       expect(viewModel.things, isEmpty);
-      
+
       // Verify the repository was updated
       final repoThings = await fakeRepo.getThings();
       expect(repoThings, isEmpty);

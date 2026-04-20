@@ -6,13 +6,11 @@ import 'router/server_router.dart';
 
 class ApiServer {
   final _logger = Logger('ApiServer');
-  
+
   late final ThingController _thingController;
   late final ServerRouter _router;
 
-  ApiServer({
-    required ResourceStorage storage,
-  }) {
+  ApiServer({required ResourceStorage storage}) {
     _thingController = ThingController(storage);
     _router = ServerRouter(_thingController);
     _logger.info('ApiServer initialized with dependencies');

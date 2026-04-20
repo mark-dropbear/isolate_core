@@ -18,14 +18,17 @@ void main() {
 
     test('parse() throws FormatException on invalid format', () {
       expect(() => ResourceName.parse('things'), throwsFormatException);
-      expect(() => ResourceName.parse('things/123/extra'), throwsFormatException);
+      expect(
+        () => ResourceName.parse('things/123/extra'),
+        throwsFormatException,
+      );
     });
 
     test('equality and hashCode work as expected', () {
       const name1 = ResourceName('things/123');
       const name2 = ResourceName('things/123');
       const name3 = ResourceName('things/456');
-      
+
       expect(name1, equals(name2));
       expect(name1.hashCode, equals(name2.hashCode));
       expect(name1, isNot(equals(name3)));

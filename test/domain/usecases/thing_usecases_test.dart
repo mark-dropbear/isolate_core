@@ -16,9 +16,7 @@ void main() {
 
     test('GetThingsUseCase returns items from repository', () async {
       final useCase = GetThingsUseCase(fakeRepo);
-      fakeRepo.seed([
-        const Thing(name: 'things/1', displayName: 'Item 1'),
-      ]);
+      fakeRepo.seed([const Thing(name: 'things/1', displayName: 'Item 1')]);
 
       final results = await useCase();
       expect(results.length, 1);
@@ -27,9 +25,7 @@ void main() {
 
     test('DeleteThingUseCase removes item from repository', () async {
       final useCase = DeleteThingUseCase(fakeRepo);
-      fakeRepo.seed([
-        const Thing(name: 'things/1', displayName: 'Item 1'),
-      ]);
+      fakeRepo.seed([const Thing(name: 'things/1', displayName: 'Item 1')]);
 
       await useCase('things/1');
       final remaining = await fakeRepo.getThings();
@@ -39,9 +35,9 @@ void main() {
     group('SaveThingUseCase', () {
       test('creates a new thing if existingThing is null', () async {
         final useCase = SaveThingUseCase(fakeRepo);
-        
+
         await useCase(null, 'New Thing');
-        
+
         final results = await fakeRepo.getThings();
         expect(results.length, 1);
         expect(results.first.displayName, 'New Thing');
@@ -54,7 +50,7 @@ void main() {
         fakeRepo.seed([existingThing]);
 
         await useCase(existingThing, 'Updated Name');
-        
+
         final results = await fakeRepo.getThings();
         expect(results.length, 1);
         expect(results.first.name, 'things/1');

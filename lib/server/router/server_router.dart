@@ -11,7 +11,7 @@ class ServerRouter {
 
   Future<TransportResponse> route(TransportRequest request) async {
     _logger.info('Routing request: ${request.method} ${request.path}');
-    
+
     try {
       final uri = Uri.parse(request.path);
       final path = uri.path;
@@ -32,7 +32,7 @@ class ServerRouter {
           return const TransportResponse(statusCode: 400);
         }
         final name = resourceName.toString();
-        
+
         if (request.method == 'GET') {
           return await _thingController.handleGet(name);
         } else if (request.method == 'PATCH') {

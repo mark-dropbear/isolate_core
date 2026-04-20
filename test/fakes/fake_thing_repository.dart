@@ -41,7 +41,7 @@ class FakeThingRepository implements ThingRepository {
     if (index == -1) {
       throw Exception('Thing not found');
     }
-    
+
     _things[index] = thing;
     return thing;
   }
