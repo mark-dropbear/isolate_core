@@ -1,8 +1,8 @@
 import 'package:isolate_core/api/models/resource_name.dart';
 import 'package:isolate_core/api/models/thing.dart';
-import 'package:isolate_core/domain/repositories/thing_repository.dart';
+import 'package:isolate_core/domain/repositories/standard_resource_repository.dart';
 
-class FakeThingRepository implements ThingRepository {
+class FakeThingRepository implements StandardResourceRepository<Thing> {
   final List<Thing> _things = [];
 
   // Helper method for tests to seed data
@@ -12,13 +12,13 @@ class FakeThingRepository implements ThingRepository {
   }
 
   @override
-  Future<List<Thing>> getThings() async {
+  Future<List<Thing>> listResources({int? pageSize, String? pageToken}) async {
     // Return a copy to prevent external mutation
     return List.from(_things);
   }
 
   @override
-  Future<Thing> getThing(String name) async {
+  Future<Thing> getResource(String name) async {
     return _things.firstWhere(
       (t) => t.name == name,
       orElse: () => throw Exception('Thing not found'),
@@ -26,28 +26,28 @@ class FakeThingRepository implements ThingRepository {
   }
 
   @override
-  Future<Thing> createThing(String displayName) async {
+  Future<Thing> createResource(Thing resource, {String? resourceId}) async {
     final newThing = Thing(
-      name: ResourceName.generate('things').toString(),
-      displayName: displayName,
+      name: resourceId ?? ResourceName.generate('things').toString(),
+      displayName: resource.displayName,
     );
     _things.add(newThing);
     return newThing;
   }
 
   @override
-  Future<Thing> updateThing(Thing thing) async {
-    final index = _things.indexWhere((t) => t.name == thing.name);
+  Future<Thing> updateResource(Thing resource, {List<String>? updateMask}) async {
+    final index = _things.indexWhere((t) => t.name == resource.name);
     if (index == -1) {
       throw Exception('Thing not found');
     }
 
-    _things[index] = thing;
-    return thing;
+    _things[index] = resource;
+    return resource;
   }
 
   @override
-  Future<void> deleteThing(String name) async {
+  Future<void> deleteResource(String name) async {
     _things.removeWhere((t) => t.name == name);
   }
 }

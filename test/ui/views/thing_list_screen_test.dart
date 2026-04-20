@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isolate_core/api/models/thing.dart';
-import 'package:isolate_core/domain/usecases/delete_thing_usecase.dart';
-import 'package:isolate_core/domain/usecases/get_things_usecase.dart';
+import 'package:isolate_core/domain/usecases/standard_usecases.dart';
 import 'package:isolate_core/ui/viewmodels/thing_list_viewmodel.dart';
 import 'package:isolate_core/ui/views/thing_list_screen.dart';
 
@@ -16,8 +15,8 @@ void main() {
     setUp(() {
       fakeRepo = FakeThingRepository();
       viewModel = ThingListViewModel(
-        GetThingsUseCase(fakeRepo),
-        DeleteThingUseCase(fakeRepo),
+        getThings: ListResourcesUseCase<Thing>(fakeRepo),
+        deleteThing: DeleteResourceUseCase<Thing>(fakeRepo),
       );
     });
 
@@ -88,7 +87,7 @@ void main() {
       expect(find.text('No things found. Add one!'), findsOneWidget);
 
       // Verify backend update
-      final things = await fakeRepo.getThings();
+      final things = await fakeRepo.listResources();
       expect(things, isEmpty);
     });
   });

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isolate_core/api/models/thing.dart';
-import 'package:isolate_core/domain/usecases/save_thing_usecase.dart';
+import 'package:isolate_core/domain/usecases/standard_usecases.dart';
 import 'package:isolate_core/ui/viewmodels/thing_detail_viewmodel.dart';
 
 import '../../fakes/fake_thing_repository.dart';
@@ -12,7 +12,7 @@ void main() {
 
     setUp(() {
       fakeRepo = FakeThingRepository();
-      viewModel = ThingDetailViewModel(SaveThingUseCase(fakeRepo));
+      viewModel = ThingDetailViewModel(saveThing: SaveResourceUseCase<Thing>(fakeRepo));
     });
 
     test('initial state is correct', () {
@@ -33,7 +33,7 @@ void main() {
         expect(viewModel.isLoading, isFalse);
         expect(viewModel.error, isNull);
 
-        final things = await fakeRepo.getThings();
+        final things = await fakeRepo.listResources();
         expect(things.length, 1);
         expect(things.first.displayName, 'New Thing');
       },
@@ -47,7 +47,7 @@ void main() {
 
       expect(result, isTrue);
 
-      final things = await fakeRepo.getThings();
+      final things = await fakeRepo.listResources();
       expect(things.length, 1);
       expect(things.first.name, 'things/1');
       expect(things.first.displayName, 'New Name');

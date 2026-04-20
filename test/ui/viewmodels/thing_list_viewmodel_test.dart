@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isolate_core/api/models/thing.dart';
-import 'package:isolate_core/domain/usecases/delete_thing_usecase.dart';
-import 'package:isolate_core/domain/usecases/get_things_usecase.dart';
+import 'package:isolate_core/domain/usecases/standard_usecases.dart';
 import 'package:isolate_core/ui/viewmodels/thing_list_viewmodel.dart';
 
 import '../../fakes/fake_thing_repository.dart';
@@ -14,8 +13,8 @@ void main() {
     setUp(() {
       fakeRepo = FakeThingRepository();
       viewModel = ThingListViewModel(
-        GetThingsUseCase(fakeRepo),
-        DeleteThingUseCase(fakeRepo),
+        getThings: ListResourcesUseCase<Thing>(fakeRepo),
+        deleteThing: DeleteResourceUseCase<Thing>(fakeRepo),
       );
     });
 
@@ -59,7 +58,7 @@ void main() {
       expect(viewModel.things, isEmpty);
 
       // Verify the repository was updated
-      final repoThings = await fakeRepo.getThings();
+      final repoThings = await fakeRepo.listResources();
       expect(repoThings, isEmpty);
     });
   });

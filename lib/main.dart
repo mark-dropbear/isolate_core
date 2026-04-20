@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'dart:developer' as developer;
 
-import 'domain/usecases/get_things_usecase.dart';
-import 'domain/usecases/delete_thing_usecase.dart';
-import 'domain/usecases/save_thing_usecase.dart';
-import 'data/repositories/thing_repository_impl.dart';
-import 'data/services/thing_api_service.dart';
 import 'api/models/thing.dart';
+import 'core/di/injection_container.dart';
 import 'transport/isolate_transport_client.dart';
+import 'transport/transport_client.dart';
 import 'ui/viewmodels/thing_detail_viewmodel.dart';
 import 'ui/viewmodels/thing_list_viewmodel.dart';
 import 'ui/views/thing_list_screen.dart';
@@ -35,37 +32,18 @@ void main() async {
   final logger = Logger('main');
   logger.info('Starting Things App');
 
-  // Initialize transport and data layers
-  final transportClient = IsolateTransportClient();
+  // Initialize Dependency Injection
+  setupDependencies();
+
+  // Initialize transport layer
+  final transportClient = getIt<TransportClient>() as IsolateTransportClient;
   await transportClient.initialize();
 
-  final apiService = ThingApiService(transportClient);
-  final repository = ThingRepositoryImpl(apiService);
-
-  final getThingsUseCase = GetThingsUseCase(repository);
-  final deleteThingUseCase = DeleteThingUseCase(repository);
-  final saveThingUseCase = SaveThingUseCase(repository);
-
-  runApp(
-    MyApp(
-      getThingsUseCase: getThingsUseCase,
-      deleteThingUseCase: deleteThingUseCase,
-      saveThingUseCase: saveThingUseCase,
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final GetThingsUseCase getThingsUseCase;
-  final DeleteThingUseCase deleteThingUseCase;
-  final SaveThingUseCase saveThingUseCase;
-
-  const MyApp({
-    super.key,
-    required this.getThingsUseCase,
-    required this.deleteThingUseCase,
-    required this.saveThingUseCase,
-  });
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +65,10 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.system,
       home: ThingListScreen(
-        viewModel: ThingListViewModel(getThingsUseCase, deleteThingUseCase),
+        viewModel: ThingListViewModel(),
         formScreenBuilder: (context, Thing? thing) {
           return ThingFormScreen(
-            viewModel: ThingDetailViewModel(saveThingUseCase),
+            viewModel: ThingDetailViewModel(),
             thing: thing,
           );
         },

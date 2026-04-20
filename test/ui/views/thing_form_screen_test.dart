@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isolate_core/api/models/thing.dart';
-import 'package:isolate_core/domain/usecases/save_thing_usecase.dart';
+import 'package:isolate_core/domain/usecases/standard_usecases.dart';
 import 'package:isolate_core/ui/viewmodels/thing_detail_viewmodel.dart';
 import 'package:isolate_core/ui/views/thing_form_screen.dart';
 
@@ -14,7 +14,7 @@ void main() {
 
     setUp(() {
       fakeRepo = FakeThingRepository();
-      viewModel = ThingDetailViewModel(SaveThingUseCase(fakeRepo));
+      viewModel = ThingDetailViewModel(saveThing: SaveResourceUseCase<Thing>(fakeRepo));
     });
 
     testWidgets('renders create mode when no existing thing is provided', (
@@ -64,7 +64,7 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      final things = await fakeRepo.getThings();
+      final things = await fakeRepo.listResources();
       expect(things.length, 1);
       expect(things.first.displayName, 'New Banana');
     });
@@ -87,7 +87,7 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
 
-      final things = await fakeRepo.getThings();
+      final things = await fakeRepo.listResources();
       expect(things.length, 1);
       expect(things.first.name, 'things/1');
       expect(things.first.displayName, 'Fresh Apple');
