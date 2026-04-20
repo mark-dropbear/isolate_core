@@ -22,9 +22,9 @@ void main() {
     });
 
     test('equality and hashCode work as expected', () {
-      const name1 = ResourceName('things', '123');
-      const name2 = ResourceName('things', '123');
-      const name3 = ResourceName('things', '456');
+      const name1 = ResourceName('things/123');
+      const name2 = ResourceName('things/123');
+      const name3 = ResourceName('things/456');
       
       expect(name1, equals(name2));
       expect(name1.hashCode, equals(name2.hashCode));

@@ -31,8 +31,9 @@ class ThingController {
       final requestDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(body));
       final newName = ResourceName.generate('things').toString();
       final targetIri = Vocab.getResourceIri(newName);
+      final oldIri = Vocab.getResourceIri('');
 
-      final rewrittenDataset = RdfUtils.rewriteResourceIri(requestDataset, targetIri);
+      final rewrittenDataset = RdfUtils.rewriteResourceIri(requestDataset, oldIri, targetIri);
       
       final created = await _storage.saveResource(targetIri, rewrittenDataset);
       return TransportResponse(statusCode: 201, body: nQuadsCodec.encode(created));
