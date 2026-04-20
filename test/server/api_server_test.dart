@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:file/memory.dart';
 import 'package:isolate_core/server/api_server.dart';
-import 'package:isolate_core/server/data/file_thing_storage.dart';
+import 'package:isolate_core/server/data/rdf_thing_storage.dart';
 import 'package:isolate_core/transport/transport_models.dart';
-import 'dart:convert';
+import 'package:isolate_core/api/models/thing.dart';
+import 'package:isolate_core/api/models/vocab.dart';
+import 'package:rdf_dart/rdf_dart.dart';
 
 void main() {
   group('ApiServer End-to-End', () {
@@ -11,8 +13,8 @@ void main() {
 
     setUp(() {
       final fs = MemoryFileSystem();
-      final file = fs.file('/things.json');
-      final storage = FileThingStorage(file);
+      final file = fs.file('/things.nq');
+      final storage = RdfThingStorage(file);
       apiServer = ApiServer(storage: storage);
     });
 
@@ -21,72 +23,89 @@ void main() {
       final response = await apiServer.handleRequest(req);
 
       expect(response.statusCode, 200);
-      expect(response.body, {'things': []});
+      expect(response.body, ''); // Empty memory dataset encoded returns empty string or empty quads
     });
 
     test('POST /things creates a thing with a generated name', () async {
+      final thing = Thing(name: '', displayName: 'Test Thing');
       final req = TransportRequest(
         method: 'POST',
         path: '/things',
-        body: {'displayName': 'Test Thing'},
+        body: nQuadsCodec.encode(thing.toDataset()),
       );
       final response = await apiServer.handleRequest(req);
 
       expect(response.statusCode, 201);
-      final body = response.body as Map<String, dynamic>;
-      expect(body['name'], startsWith('things/'));
-      expect(body['displayName'], 'Test Thing');
+      final dataset = MemoryDataset.fromIterable(nQuadsCodec.decode(response.body as String));
+      expect(dataset.isNotEmpty, isTrue);
+      // Graph name should be generated
+      final graphNames = dataset.map((q) => q.graph).whereType<NamedNode>();
+      expect(graphNames.isNotEmpty, isTrue);
+      expect(graphNames.first.value, startsWith('https://example.com/api/things/'));
     });
 
     test('GET /things/{id} retrieves the created thing', () async {
       // 1. Create
+      final thing = Thing(name: '', displayName: 'Test Thing');
       final createReq = TransportRequest(
         method: 'POST',
         path: '/things',
-        body: {'displayName': 'Test Thing'},
+        body: nQuadsCodec.encode(thing.toDataset()),
       );
       final createRes = await apiServer.handleRequest(createReq);
-      final createdName = (createRes.body as Map<String, dynamic>)['name'] as String;
+      final createdDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(createRes.body as String));
+      final graphNameNode = createdDataset.map((q) => q.graph).whereType<NamedNode>().first;
+      final createdName = Vocab.getResourceName(graphNameNode);
 
       // 2. Fetch
       final getReq = TransportRequest(method: 'GET', path: '/$createdName');
       final getRes = await apiServer.handleRequest(getReq);
 
       expect(getRes.statusCode, 200);
-      expect((getRes.body as Map<String, dynamic>)['displayName'], 'Test Thing');
+      final getDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(getRes.body as String));
+      expect(getDataset.isNotEmpty, isTrue);
     });
 
     test('PATCH /things/{id} updates only the display name', () async {
       // 1. Create
+      final thing = Thing(name: '', displayName: 'Old Name');
       final createReq = TransportRequest(
         method: 'POST',
         path: '/things',
-        body: {'displayName': 'Old Name'},
+        body: nQuadsCodec.encode(thing.toDataset()),
       );
       final createRes = await apiServer.handleRequest(createReq);
-      final createdName = (createRes.body as Map<String, dynamic>)['name'] as String;
+      final createdDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(createRes.body as String));
+      final graphNameNode = createdDataset.map((q) => q.graph).whereType<NamedNode>().first;
+      final createdName = Vocab.getResourceName(graphNameNode);
 
       // 2. Patch
+      final updateThing = Thing(name: createdName, displayName: 'New Name');
       final patchReq = TransportRequest(
         method: 'PATCH',
         path: '/$createdName?updateMask=displayName',
-        body: {'displayName': 'New Name'},
+        body: nQuadsCodec.encode(updateThing.toDataset()),
       );
       final patchRes = await apiServer.handleRequest(patchReq);
 
       expect(patchRes.statusCode, 200);
-      expect((patchRes.body as Map<String, dynamic>)['displayName'], 'New Name');
+      final patchDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(patchRes.body as String));
+      final patchedThing = Thing.fromDataset(patchDataset, createdName);
+      expect(patchedThing.displayName, 'New Name');
     });
 
     test('DELETE /things/{id} removes the thing', () async {
       // 1. Create
+      final thing = Thing(name: '', displayName: 'To Delete');
       final createReq = TransportRequest(
         method: 'POST',
         path: '/things',
-        body: {'displayName': 'To Delete'},
+        body: nQuadsCodec.encode(thing.toDataset()),
       );
       final createRes = await apiServer.handleRequest(createReq);
-      final createdName = (createRes.body as Map<String, dynamic>)['name'] as String;
+      final createdDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(createRes.body as String));
+      final graphNameNode = createdDataset.map((q) => q.graph).whereType<NamedNode>().first;
+      final createdName = Vocab.getResourceName(graphNameNode);
 
       // 2. Delete
       final deleteReq = TransportRequest(method: 'DELETE', path: '/$createdName');

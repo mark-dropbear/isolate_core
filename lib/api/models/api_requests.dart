@@ -1,3 +1,5 @@
+import 'package:rdf_dart/rdf_dart.dart';
+import 'vocab.dart';
 import 'thing.dart';
 
 class GetThingRequest {
@@ -34,20 +36,17 @@ class ListThingsResponse {
 
   const ListThingsResponse({required this.things, this.nextPageToken});
 
-  factory ListThingsResponse.fromJson(Map<String, dynamic> json) {
+  factory ListThingsResponse.fromDataset(Dataset dataset) {
+    final List<Thing> things = [];
+    final graphNames = dataset.map((q) => q.graph).whereType<NamedNode>().toSet();
+    
+    for (final graphName in graphNames) {
+      final resourceName = Vocab.getResourceName(graphName);
+      things.add(Thing.fromDataset(dataset, resourceName));
+    }
+    
     return ListThingsResponse(
-      things: (json['things'] as List<dynamic>?)
-              ?.map((e) => Thing.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      nextPageToken: json['nextPageToken'] as String?,
+      things: things,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'things': things.map((e) => e.toJson()).toList(),
-      if (nextPageToken != null) 'nextPageToken': nextPageToken,
-    };
   }
 }

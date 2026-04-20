@@ -1,3 +1,5 @@
+import 'package:rdf_dart/rdf_dart.dart';
+import '../../api/models/vocab.dart';
 import '../../api/models/thing.dart';
 import '../../transport/transport_client.dart';
 import '../../transport/transport_models.dart';
@@ -26,7 +28,11 @@ class ThingApiService {
     ));
 
     if (response.statusCode == 200) {
-      return ListThingsResponse.fromJson(response.body ?? {'things': []});
+      if (response.body == null || response.body is! String) {
+        return const ListThingsResponse(things: []);
+      }
+      final dataset = MemoryDataset.fromIterable(nQuadsCodec.decode(response.body as String));
+      return ListThingsResponse.fromDataset(dataset);
     } else {
       _logger.warning('listThings failed: ${response.statusCode}');
       throw Exception('Failed to load things: ${response.statusCode}');
@@ -41,7 +47,8 @@ class ThingApiService {
     ));
 
     if (response.statusCode == 200) {
-      return Thing.fromJson(response.body!);
+      final dataset = MemoryDataset.fromIterable(nQuadsCodec.decode(response.body as String));
+      return Thing.fromDataset(dataset, request.name);
     } else {
       _logger.warning('getThing failed: ${response.statusCode}');
       throw Exception('Failed to get thing ${request.name}: ${response.statusCode}');
@@ -58,11 +65,16 @@ class ThingApiService {
     final response = await _client.send(TransportRequest(
       method: 'POST',
       path: path,
-      body: request.thing.toJson(),
+      body: nQuadsCodec.encode(request.thing.toDataset()),
     ));
 
     if (response.statusCode == 201) {
-      return Thing.fromJson(response.body!);
+      final dataset = MemoryDataset.fromIterable(nQuadsCodec.decode(response.body as String));
+      // We don't know the exact new ID here until we parse the dataset
+      // The dataset returned will have the new IRI. We can just pick the first graph name.
+      final graphNames = dataset.map((q) => q.graph).whereType<NamedNode>();
+      final name = graphNames.isNotEmpty ? Vocab.getResourceName(graphNames.first) : '';
+      return Thing.fromDataset(dataset, name);
     } else {
       _logger.warning('createThing failed: ${response.statusCode}');
       throw Exception('Failed to create thing: ${response.statusCode}');
@@ -80,11 +92,12 @@ class ThingApiService {
     final response = await _client.send(TransportRequest(
       method: 'PATCH',
       path: path,
-      body: request.thing.toJson(),
+      body: nQuadsCodec.encode(request.thing.toDataset()),
     ));
 
     if (response.statusCode == 200) {
-      return Thing.fromJson(response.body!);
+      final dataset = MemoryDataset.fromIterable(nQuadsCodec.decode(response.body as String));
+      return Thing.fromDataset(dataset, request.thing.name);
     } else {
       _logger.warning('updateThing failed: ${response.statusCode}');
       throw Exception('Failed to update thing: ${response.statusCode}');

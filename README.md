@@ -12,8 +12,9 @@ This project serves as a blueprint for applications that require strict separati
 - **Google AIP Compliance:** 
   - **AIP-122:** Formal `ResourceName` encapsulation (`things/uuid`).
   - **AIP-127:** HTTP Transcoding, mapping structured Request/Response DTOs onto raw HTTP verbs, paths, and query parameters.
-  - **AIP-134:** Standard Update methods using `PATCH` operations and partial `updateMask` fields.
+  - **AIP-134:** Standard Update methods using `PATCH` operations and partial `updateMask` fields, mapped directly to precise RDF triple insertions/deletions.
 - **Isolate Transport Layer:** A custom transport mechanism (`TransportRequest` / `TransportResponse`) that simulates a real network boundary without requiring an actual HTTP server.
+- **RDF Data Layer:** A semantic data layer using `rdf_dart` that persists data in perfectly encapsulated N-Quads Datasets.
 - **Comprehensive Testing Suite:** Fully unit-tested and widget-tested utilizing Fakes (in-memory data) rather than brittle mocks.
 
 ## Project Structure
@@ -44,8 +45,8 @@ The Flutter client knows absolutely nothing about the backend implementation.
 ### 3. The Server
 Running in a spawned background isolate, `ApiServer` receives raw `TransportRequest` objects. 
 - The **ServerRouter** parses paths.
-- The **ThingController** extracts JSON bodies and enforces business rules.
-- The **ThingStorage** (abstracted) persists the data. We currently use `FileThingStorage` backed by an in-memory `MemoryFileSystem`.
+- The **ThingController** extracts Datasets and enforces business rules.
+- The **ThingStorage** (abstracted) persists the data. We currently use `RdfThingStorage` backed by an in-memory `MemoryFileSystem`, serializing application state to N-Quads.
 
 ## Testing
 
