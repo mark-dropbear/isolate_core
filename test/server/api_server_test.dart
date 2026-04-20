@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:file/memory.dart';
 import 'package:isolate_core/server/api_server.dart';
-import 'package:isolate_core/server/data/rdf_thing_storage.dart';
+import 'package:isolate_core/server/data/rdf_resource_storage.dart';
 import 'package:isolate_core/transport/transport_models.dart';
 import 'package:isolate_core/api/models/thing.dart';
 import 'package:isolate_core/api/models/vocab.dart';
@@ -14,7 +14,7 @@ void main() {
     setUp(() {
       final fs = MemoryFileSystem();
       final file = fs.file('/things.nq');
-      final storage = RdfThingStorage(file);
+      final storage = RdfResourceStorage(file);
       apiServer = ApiServer(storage: storage);
     });
 

@@ -1,7 +1,7 @@
 import 'package:logging/logging.dart';
 import '../transport/transport_models.dart';
 import 'controllers/thing_controller.dart';
-import 'data/thing_storage.dart';
+import 'data/resource_storage.dart';
 import 'router/server_router.dart';
 
 class ApiServer {
@@ -11,7 +11,7 @@ class ApiServer {
   late final ServerRouter _router;
 
   ApiServer({
-    required ThingStorage storage,
+    required ResourceStorage storage,
   }) {
     _thingController = ThingController(storage);
     _router = ServerRouter(_thingController);

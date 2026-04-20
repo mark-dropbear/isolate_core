@@ -20,4 +20,15 @@ class Vocab {
     if (!node.value.startsWith(apiPrefix)) throw Exception('Node does not have api prefix');
     return node.value.substring(apiPrefix.length);
   }
+  static Set<NamedNode> mapFieldsToPredicates(Iterable<String> fields) {
+    final predicates = <NamedNode>{};
+    for (final field in fields) {
+      switch (field) {
+        case 'displayName':
+          predicates.add(displayName);
+          break;
+      }
+    }
+    return predicates;
+  }
 }

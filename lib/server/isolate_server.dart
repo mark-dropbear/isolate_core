@@ -6,7 +6,7 @@ import 'package:logging/logging.dart';
 
 import '../transport/transport_models.dart';
 import 'api_server.dart';
-import 'data/rdf_thing_storage.dart';
+import 'data/rdf_resource_storage.dart';
 
 class IsolateServerMessage {
   final String id;
@@ -44,7 +44,7 @@ void isolateServerEntry(SendPort mainSendPort) {
   // Initialize Backend Layers
   final FileSystem fs = MemoryFileSystem();
   final dataFile = fs.file('/things.nq');
-  final storage = RdfThingStorage(dataFile);
+  final storage = RdfResourceStorage(dataFile);
   
   final apiServer = ApiServer(storage: storage);
 

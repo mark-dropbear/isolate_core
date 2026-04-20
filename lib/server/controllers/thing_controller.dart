@@ -2,17 +2,17 @@ import 'package:rdf_dart/rdf_dart.dart';
 import '../../api/models/resource_name.dart';
 import '../../api/models/vocab.dart';
 import '../../transport/transport_models.dart';
-import '../data/thing_storage.dart';
+import '../data/resource_storage.dart';
 import '../utils/rdf_utils.dart';
 
 class ThingController {
-  final ThingStorage _storage;
+  final ResourceStorage _storage;
 
   ThingController(this._storage);
 
   Future<TransportResponse> handleList(Uri uri) async {
     try {
-      final dataset = await _storage.getAllThings();
+      final dataset = await _storage.getAllResources();
       // Pagination can be applied here using uri.queryParameters
       return TransportResponse(
         statusCode: 200,
@@ -34,7 +34,7 @@ class ThingController {
 
       final rewrittenDataset = RdfUtils.rewriteResourceIri(requestDataset, targetIri);
       
-      final created = await _storage.createThing(newName, rewrittenDataset);
+      final created = await _storage.saveResource(targetIri, rewrittenDataset);
       return TransportResponse(statusCode: 201, body: nQuadsCodec.encode(created));
     } catch (e) {
       return const TransportResponse(statusCode: 500);
@@ -43,7 +43,8 @@ class ThingController {
 
   Future<TransportResponse> handleGet(String name) async {
     try {
-      final dataset = await _storage.getThingByName(name);
+      final targetIri = Vocab.getResourceIri(name);
+      final dataset = await _storage.getResource(targetIri);
       if (dataset == null) {
         return const TransportResponse(statusCode: 404);
       }
@@ -58,15 +59,21 @@ class ThingController {
       final body = request.body;
       if (body == null) return const TransportResponse(statusCode: 400);
 
-      final existing = await _storage.getThingByName(name);
+      final targetIri = Vocab.getResourceIri(name);
+      final existing = await _storage.getResource(targetIri);
       if (existing == null) {
         return const TransportResponse(statusCode: 404);
       }
 
       final updateMask = uri.queryParameters['updateMask']?.split(',');
+      Set<NamedNode>? updatePredicates;
+      if (updateMask != null && updateMask.isNotEmpty) {
+        updatePredicates = Vocab.mapFieldsToPredicates(updateMask);
+      }
+      
       final requestDataset = MemoryDataset.fromIterable(nQuadsCodec.decode(body));
 
-      final result = await _storage.updateThing(name, requestDataset, updateMask: updateMask);
+      final result = await _storage.updateResource(targetIri, requestDataset, updatePredicates: updatePredicates);
       return TransportResponse(statusCode: 200, body: nQuadsCodec.encode(result));
     } catch (e) {
       return const TransportResponse(statusCode: 500);
@@ -75,12 +82,13 @@ class ThingController {
 
   Future<TransportResponse> handleDelete(String name) async {
     try {
-      final existing = await _storage.getThingByName(name);
+      final targetIri = Vocab.getResourceIri(name);
+      final existing = await _storage.getResource(targetIri);
       if (existing == null) {
         return const TransportResponse(statusCode: 404);
       }
 
-      await _storage.deleteThing(name);
+      await _storage.deleteResource(targetIri);
       return const TransportResponse(statusCode: 204);
     } catch (e) {
       return const TransportResponse(statusCode: 500);
