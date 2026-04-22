@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'dart:developer' as developer;
 
@@ -18,10 +19,7 @@ import 'data/services/task_api_service.dart';
 import 'data/services/task_list_api_service.dart';
 import 'data/services/debug_api_service.dart';
 import 'transport/isolate_transport_client.dart';
-import 'ui/viewmodels/task_list_viewmodel.dart';
-import 'ui/viewmodels/task_screen_viewmodel.dart';
-import 'ui/views/task_list_screen.dart';
-import 'ui/views/task_screen.dart';
+import 'ui/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -97,7 +95,9 @@ class MyApp extends StatelessWidget {
   final AddTaskToListUseCase addTaskToListUseCase;
   final DebugApiService debugApiService;
 
-  const MyApp({
+  late final GoRouter _router;
+
+  MyApp({
     super.key,
     required this.getThingsUseCase,
     required this.deleteThingUseCase,
@@ -108,11 +108,21 @@ class MyApp extends StatelessWidget {
     required this.saveTaskListUseCase,
     required this.addTaskToListUseCase,
     required this.debugApiService,
-  });
+  }) {
+    _router = createAppRouter(
+      getTaskListsUseCase: getTaskListsUseCase,
+      saveTaskListUseCase: saveTaskListUseCase,
+      getTasksForListUseCase: getTasksForListUseCase,
+      saveTaskUseCase: saveTaskUseCase,
+      addTaskToListUseCase: addTaskToListUseCase,
+      debugApiService: debugApiService,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+
+    return MaterialApp.router(
       title: 'Things App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -129,24 +139,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
-      home: TaskListScreen(
-        viewModel: TaskListViewModel(
-          getTaskListsUseCase,
-          saveTaskListUseCase,
-          debugApiService,
-        ),
-        taskScreenBuilder: (context, listName, displayName) {
-          return TaskScreen(
-            viewModel: TaskScreenViewModel(
-              getTasksForListUseCase,
-              saveTaskUseCase,
-              addTaskToListUseCase,
-            ),
-            listName: listName,
-            listDisplayName: displayName,
-          );
-        },
-      ),
+      routerConfig: _router,
     );
   }
 }

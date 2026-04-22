@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../viewmodels/task_list_viewmodel.dart';
-import 'task_screen.dart';
 
 class TaskListScreen extends StatefulWidget {
   final TaskListViewModel viewModel;
-  final TaskScreen Function(BuildContext context, String listName, String displayName)
-      taskScreenBuilder;
 
   const TaskListScreen({
     super.key,
     required this.viewModel,
-    required this.taskScreenBuilder,
   });
 
   @override
@@ -66,15 +63,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 title: Text(list.displayName),
                 subtitle: Text('ID: ${list.name}'),
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => widget.taskScreenBuilder(
-                        ctx,
-                        list.name,
-                        list.displayName,
-                      ),
-                    ),
-                  );
+                  final encodedName = Uri.encodeComponent(list.name);
+                  context.go('/tasks/$encodedName', extra: list.displayName);
                 },
               );
             },
