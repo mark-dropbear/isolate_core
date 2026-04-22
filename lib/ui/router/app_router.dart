@@ -9,6 +9,7 @@ import 'package:isolate_core/ui/viewmodels/task_list_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/task_screen_viewmodel.dart';
 import 'package:isolate_core/ui/views/task_list_screen.dart';
 import 'package:isolate_core/ui/views/task_screen.dart';
+import 'package:isolate_core/ui/views/app_shell.dart';
 
 GoRouter createAppRouter({
   required GetTaskListsUseCase getTaskListsUseCase,
@@ -21,32 +22,39 @@ GoRouter createAppRouter({
   return GoRouter(
     initialLocation: '/',
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => TaskListScreen(
-          viewModel: TaskListViewModel(
-            getTaskListsUseCase,
-            saveTaskListUseCase,
-            debugApiService,
-          ),
-        ),
-      ),
-      GoRoute(
-        path: '/tasks/:listName',
-        builder: (context, state) {
-          final encodedListName = state.pathParameters['listName']!;
-          final listName = Uri.decodeComponent(encodedListName);
-          final displayName = state.extra as String? ?? 'Tasks';
-          return TaskScreen(
-            viewModel: TaskScreenViewModel(
-              getTasksForListUseCase,
-              saveTaskUseCase,
-              addTaskToListUseCase,
-            ),
-            listName: listName,
-            listDisplayName: displayName,
-          );
+      ShellRoute(
+        builder: (context, state, child) {
+          return AppShell(child: child);
         },
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => TaskListScreen(
+              viewModel: TaskListViewModel(
+                getTaskListsUseCase,
+                saveTaskListUseCase,
+                debugApiService,
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/tasks/:listName',
+            builder: (context, state) {
+              final encodedListName = state.pathParameters['listName']!;
+              final listName = Uri.decodeComponent(encodedListName);
+              final displayName = state.extra as String? ?? 'Tasks';
+              return TaskScreen(
+                viewModel: TaskScreenViewModel(
+                  getTasksForListUseCase,
+                  saveTaskUseCase,
+                  addTaskToListUseCase,
+                ),
+                listName: listName,
+                listDisplayName: displayName,
+              );
+            },
+          ),
+        ],
       ),
     ],
   );
