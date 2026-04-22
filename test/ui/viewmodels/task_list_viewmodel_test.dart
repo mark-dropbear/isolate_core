@@ -3,34 +3,10 @@ import 'package:isolate_core/api/models/task_list.dart';
 import 'package:isolate_core/domain/usecases/get_task_lists_usecase.dart';
 import 'package:isolate_core/domain/usecases/save_task_list_usecase.dart';
 import 'package:isolate_core/ui/viewmodels/task_list_viewmodel.dart';
-import 'package:isolate_core/data/services/debug_api_service.dart';
-import 'package:isolate_core/transport/transport_models.dart';
-import 'package:isolate_core/transport/transport_client.dart';
 
 import '../../fakes/fake_task_list_repository.dart';
 import '../../fakes/fake_task_repository.dart';
-
-class FakeTransportClient implements TransportClient {
-  @override
-  Future<void> initialize() async {}
-
-  @override
-  Future<TransportResponse> send(TransportRequest request) async {
-    return const TransportResponse(statusCode: 200, body: '<dataset>');
-  }
-  
-  @override
-  void dispose() {}
-}
-
-class FakeDebugApiService extends DebugApiService {
-  FakeDebugApiService() : super(FakeTransportClient());
-
-  @override
-  Future<String> fetchDatasetDump() async {
-    return '<dataset dump>';
-  }
-}
+import '../../fakes/fake_debug_api_service.dart';
 
 void main() {
   group('TaskListViewModel Tests', () {
