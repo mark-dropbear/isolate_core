@@ -11,6 +11,7 @@ import 'domain/usecases/save_task_list_usecase.dart';
 import 'domain/usecases/add_task_to_list_usecase.dart';
 import 'data/services/debug_api_service.dart';
 import 'ui/router/app_router.dart';
+import 'ui/theme.dart';
 
 class MyApp extends StatelessWidget {
   final GetThingsUseCase getThingsUseCase;
@@ -50,22 +51,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final materialTheme = MaterialTheme(Theme.of(context).textTheme);
+
     return MaterialApp.router(
       title: 'Things App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: materialTheme.light(),
+      darkTheme: materialTheme.dark(),
       themeMode: ThemeMode.system,
       routerConfig: _router,
     );
