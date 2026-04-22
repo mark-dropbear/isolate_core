@@ -30,6 +30,27 @@ GoRouter createAppRouter({
   required DeleteThingUseCase deleteThingUseCase,
   required SaveThingUseCase saveThingUseCase,
 }) {
+  // Instantiate ViewModels once to prevent loss of state during GoRouter rebuilds
+  final taskListViewModel = TaskListViewModel(
+    getTaskListsUseCase,
+    saveTaskListUseCase,
+    debugApiService,
+  );
+
+  final thingListViewModel = ThingListViewModel(
+    getThingsUseCase,
+    deleteThingUseCase,
+  );
+
+  // We can reuse the same detail/screen viewmodels since their state is refreshed via load() methods or they are short-lived.
+  final taskScreenViewModel = TaskScreenViewModel(
+    getTasksForListUseCase,
+    saveTaskUseCase,
+    addTaskToListUseCase,
+  );
+
+  final thingDetailViewModel = ThingDetailViewModel(saveThingUseCase);
+
   return GoRouter(
     initialLocation: '/',
     routes: [
@@ -41,11 +62,7 @@ GoRouter createAppRouter({
           GoRoute(
             path: '/',
             builder: (context, state) => TaskListScreen(
-              viewModel: TaskListViewModel(
-                getTaskListsUseCase,
-                saveTaskListUseCase,
-                debugApiService,
-              ),
+              viewModel: taskListViewModel,
             ),
           ),
           GoRoute(
@@ -55,11 +72,7 @@ GoRouter createAppRouter({
               final listName = Uri.decodeComponent(encodedListName);
               final displayName = state.extra as String? ?? 'Tasks';
               return TaskScreen(
-                viewModel: TaskScreenViewModel(
-                  getTasksForListUseCase,
-                  saveTaskUseCase,
-                  addTaskToListUseCase,
-                ),
+                viewModel: taskScreenViewModel,
                 listName: listName,
                 listDisplayName: displayName,
               );
@@ -68,16 +81,13 @@ GoRouter createAppRouter({
           GoRoute(
             path: '/things',
             builder: (context, state) => ThingListScreen(
-              viewModel: ThingListViewModel(
-                getThingsUseCase,
-                deleteThingUseCase,
-              ),
+              viewModel: thingListViewModel,
             ),
             routes: [
               GoRoute(
                 path: 'new',
                 builder: (context, state) => ThingFormScreen(
-                  viewModel: ThingDetailViewModel(saveThingUseCase),
+                  viewModel: thingDetailViewModel,
                 ),
               ),
               GoRoute(
@@ -85,7 +95,7 @@ GoRouter createAppRouter({
                 builder: (context, state) {
                   final thing = state.extra as Thing?;
                   return ThingFormScreen(
-                    viewModel: ThingDetailViewModel(saveThingUseCase),
+                    viewModel: thingDetailViewModel,
                     thing: thing,
                   );
                 },
