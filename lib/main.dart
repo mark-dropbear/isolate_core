@@ -5,14 +5,23 @@ import 'dart:developer' as developer;
 import 'domain/usecases/get_things_usecase.dart';
 import 'domain/usecases/delete_thing_usecase.dart';
 import 'domain/usecases/save_thing_usecase.dart';
+import 'domain/usecases/get_task_lists_usecase.dart';
+import 'domain/usecases/get_tasks_for_list_usecase.dart';
+import 'domain/usecases/save_task_usecase.dart';
+import 'domain/usecases/save_task_list_usecase.dart';
+import 'domain/usecases/add_task_to_list_usecase.dart';
 import 'data/repositories/thing_repository_impl.dart';
+import 'data/repositories/task_repository_impl.dart';
+import 'data/repositories/task_list_repository_impl.dart';
 import 'data/services/thing_api_service.dart';
-import 'api/models/thing.dart';
+import 'data/services/task_api_service.dart';
+import 'data/services/task_list_api_service.dart';
+import 'data/services/debug_api_service.dart';
 import 'transport/isolate_transport_client.dart';
-import 'ui/viewmodels/thing_detail_viewmodel.dart';
-import 'ui/viewmodels/thing_list_viewmodel.dart';
-import 'ui/views/thing_list_screen.dart';
-import 'ui/views/thing_form_screen.dart';
+import 'ui/viewmodels/task_list_viewmodel.dart';
+import 'ui/viewmodels/task_screen_viewmodel.dart';
+import 'ui/views/task_list_screen.dart';
+import 'ui/views/task_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,18 +48,39 @@ void main() async {
   final transportClient = IsolateTransportClient();
   await transportClient.initialize();
 
-  final apiService = ThingApiService(transportClient);
-  final repository = ThingRepositoryImpl(apiService);
+  // Thing dependencies
+  final thingApiService = ThingApiService(transportClient);
+  final thingRepository = ThingRepositoryImpl(thingApiService);
+  final getThingsUseCase = GetThingsUseCase(thingRepository);
+  final deleteThingUseCase = DeleteThingUseCase(thingRepository);
+  final saveThingUseCase = SaveThingUseCase(thingRepository);
 
-  final getThingsUseCase = GetThingsUseCase(repository);
-  final deleteThingUseCase = DeleteThingUseCase(repository);
-  final saveThingUseCase = SaveThingUseCase(repository);
+  // Task & TaskList dependencies
+  final taskApiService = TaskApiService(transportClient);
+  final taskListApiService = TaskListApiService(transportClient);
+  final debugApiService = DebugApiService(transportClient);
+  final taskRepository = TaskRepositoryImpl(taskApiService);
+  final taskListRepository =
+      TaskListRepositoryImpl(taskListApiService, taskApiService);
+
+  final getTaskListsUseCase = GetTaskListsUseCase(taskListRepository);
+  final getTasksForListUseCase = GetTasksForListUseCase(taskListRepository);
+  final saveTaskUseCase = SaveTaskUseCase(taskRepository);
+  final saveTaskListUseCase = SaveTaskListUseCase(taskListRepository);
+  final addTaskToListUseCase =
+      AddTaskToListUseCase(taskRepository, taskListRepository);
 
   runApp(
     MyApp(
       getThingsUseCase: getThingsUseCase,
       deleteThingUseCase: deleteThingUseCase,
       saveThingUseCase: saveThingUseCase,
+      getTaskListsUseCase: getTaskListsUseCase,
+      getTasksForListUseCase: getTasksForListUseCase,
+      saveTaskUseCase: saveTaskUseCase,
+      saveTaskListUseCase: saveTaskListUseCase,
+      addTaskToListUseCase: addTaskToListUseCase,
+      debugApiService: debugApiService,
     ),
   );
 }
@@ -60,11 +90,24 @@ class MyApp extends StatelessWidget {
   final DeleteThingUseCase deleteThingUseCase;
   final SaveThingUseCase saveThingUseCase;
 
+  final GetTaskListsUseCase getTaskListsUseCase;
+  final GetTasksForListUseCase getTasksForListUseCase;
+  final SaveTaskUseCase saveTaskUseCase;
+  final SaveTaskListUseCase saveTaskListUseCase;
+  final AddTaskToListUseCase addTaskToListUseCase;
+  final DebugApiService debugApiService;
+
   const MyApp({
     super.key,
     required this.getThingsUseCase,
     required this.deleteThingUseCase,
     required this.saveThingUseCase,
+    required this.getTaskListsUseCase,
+    required this.getTasksForListUseCase,
+    required this.saveTaskUseCase,
+    required this.saveTaskListUseCase,
+    required this.addTaskToListUseCase,
+    required this.debugApiService,
   });
 
   @override
@@ -86,12 +129,21 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
-      home: ThingListScreen(
-        viewModel: ThingListViewModel(getThingsUseCase, deleteThingUseCase),
-        formScreenBuilder: (context, Thing? thing) {
-          return ThingFormScreen(
-            viewModel: ThingDetailViewModel(saveThingUseCase),
-            thing: thing,
+      home: TaskListScreen(
+        viewModel: TaskListViewModel(
+          getTaskListsUseCase,
+          saveTaskListUseCase,
+          debugApiService,
+        ),
+        taskScreenBuilder: (context, listName, displayName) {
+          return TaskScreen(
+            viewModel: TaskScreenViewModel(
+              getTasksForListUseCase,
+              saveTaskUseCase,
+              addTaskToListUseCase,
+            ),
+            listName: listName,
+            listDisplayName: displayName,
           );
         },
       ),

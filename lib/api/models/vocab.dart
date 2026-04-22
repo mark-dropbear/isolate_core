@@ -3,12 +3,29 @@ import 'package:rdf_dart/rdf_dart.dart';
 class Vocab {
   static const apiPrefix = 'https://example.com/api/';
   static const vocabPrefix = 'https://example.com/vocab#';
+  static const schemaPrefix = 'https://schema.org/';
 
   // Classes
   static final thingClass = NamedNode('${vocabPrefix}Thing');
+  static final itemListClass = NamedNode('${schemaPrefix}ItemList');
+  static final listItemClass = NamedNode('${schemaPrefix}ListItem');
+  static final actionClass = NamedNode('${schemaPrefix}Action');
 
   // Properties
   static final displayName = NamedNode('${vocabPrefix}displayName');
+  static final name = NamedNode('${schemaPrefix}name');
+  static final description = NamedNode('${schemaPrefix}description');
+  static final itemListElement = NamedNode('${schemaPrefix}itemListElement');
+  static final position = NamedNode('${schemaPrefix}position');
+  static final item = NamedNode('${schemaPrefix}item');
+  static final actionStatus = NamedNode('${schemaPrefix}actionStatus');
+  static final endTime = NamedNode('${schemaPrefix}endTime');
+
+  // Action Statuses
+  static final completedActionStatus =
+      NamedNode('${schemaPrefix}CompletedActionStatus');
+  static final potentialActionStatus =
+      NamedNode('${schemaPrefix}PotentialActionStatus');
 
   // Helper methods
   static NamedNode getResourceIri(String resourceName) {
@@ -29,6 +46,15 @@ class Vocab {
       switch (field) {
         case 'displayName':
           predicates.add(displayName);
+          break;
+        case 'name':
+          predicates.add(name);
+          break;
+        case 'description':
+          predicates.add(description);
+          break;
+        case 'actionStatus':
+          predicates.add(actionStatus);
           break;
       }
     }
