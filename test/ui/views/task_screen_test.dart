@@ -6,25 +6,30 @@ import 'package:isolate_core/api/models/task_list.dart';
 import 'package:isolate_core/domain/usecases/add_task_to_list_usecase.dart';
 import 'package:isolate_core/domain/usecases/get_tasks_for_list_usecase.dart';
 import 'package:isolate_core/domain/usecases/save_task_usecase.dart';
+import 'package:isolate_core/domain/usecases/get_things_usecase.dart';
 import 'package:isolate_core/ui/viewmodels/task_screen_viewmodel.dart';
 import 'package:isolate_core/ui/views/task_screen.dart';
 
 import '../../fakes/fake_task_list_repository.dart';
 import '../../fakes/fake_task_repository.dart';
+import '../../fakes/fake_thing_repository.dart';
 
 void main() {
   group('TaskScreen Widget Tests', () {
     late FakeTaskRepository fakeTaskRepo;
     late FakeTaskListRepository fakeListRepo;
+    late FakeThingRepository fakeThingRepo;
     late TaskScreenViewModel viewModel;
 
     setUp(() {
       fakeTaskRepo = FakeTaskRepository();
       fakeListRepo = FakeTaskListRepository(fakeTaskRepo);
+      fakeThingRepo = FakeThingRepository();
       viewModel = TaskScreenViewModel(
         GetTasksForListUseCase(fakeListRepo),
         SaveTaskUseCase(fakeTaskRepo),
         AddTaskToListUseCase(fakeTaskRepo, fakeListRepo),
+        GetThingsUseCase(fakeThingRepo),
       );
 
       // Seed a default task list so we can test adding to it

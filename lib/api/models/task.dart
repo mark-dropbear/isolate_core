@@ -6,12 +6,14 @@ class Task {
   final String displayName;
   final String description;
   final String actionStatus; // schema:CompletedActionStatus or PotentialActionStatus
+  final List<String> instruments; // List of Thing resource names
 
   const Task({
     required this.name,
     required this.displayName,
     this.description = '',
     this.actionStatus = 'https://schema.org/PotentialActionStatus',
+    this.instruments = const [],
   });
 
   bool get isCompleted =>
@@ -24,6 +26,10 @@ class Task {
       description: json['description'] as String? ?? '',
       actionStatus: json['actionStatus'] as String? ??
           'https://schema.org/PotentialActionStatus',
+      instruments: (json['instruments'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -33,6 +39,7 @@ class Task {
       'displayName': displayName,
       'description': description,
       'actionStatus': actionStatus,
+      'instruments': instruments,
     };
   }
 
@@ -76,11 +83,20 @@ class Task {
         ? (statuses.first.object as NamedNode).value
         : 'https://schema.org/PotentialActionStatus';
 
+    final instrumentTriples = graph.match(
+      subject: subject,
+      predicate: Vocab.instrument,
+    );
+    final instruments = instrumentTriples
+        .map((t) => Vocab.getResourceName(t.object as NamedNode))
+        .toList();
+
     return Task(
       name: name,
       displayName: displayName,
       description: description,
       actionStatus: actionStatus,
+      instruments: instruments,
     );
   }
 
@@ -127,6 +143,17 @@ class Task {
       ),
     );
 
+    for (final instrumentName in instruments) {
+      dataset.add(
+        Quad(
+          subject: subject,
+          predicate: Vocab.instrument,
+          object: Vocab.getResourceIri(instrumentName),
+          graph: graphName,
+        ),
+      );
+    }
+
     return dataset;
   }
 
@@ -135,12 +162,14 @@ class Task {
     String? displayName,
     String? description,
     String? actionStatus,
+    List<String>? instruments,
   }) {
     return Task(
       name: name ?? this.name,
       displayName: displayName ?? this.displayName,
       description: description ?? this.description,
       actionStatus: actionStatus ?? this.actionStatus,
+      instruments: instruments ?? this.instruments,
     );
   }
 }

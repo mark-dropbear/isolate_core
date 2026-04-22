@@ -47,6 +47,7 @@ GoRouter createAppRouter({
     getTasksForListUseCase,
     saveTaskUseCase,
     addTaskToListUseCase,
+    getThingsUseCase,
   );
 
   final thingDetailViewModel = ThingDetailViewModel(saveThingUseCase);

@@ -11,6 +11,7 @@ class SaveTaskUseCase {
       return _repository.createTask(
         task.displayName,
         description: task.description,
+        instruments: task.instruments,
       );
     } else {
       return _repository.updateTask(task);

@@ -1,17 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import '../../api/models/task.dart';
+import '../../api/models/thing.dart';
 import '../../domain/usecases/get_tasks_for_list_usecase.dart';
 import '../../domain/usecases/save_task_usecase.dart';
 import '../../domain/usecases/add_task_to_list_usecase.dart';
+import '../../domain/usecases/get_things_usecase.dart';
 
 class TaskScreenViewModel extends ChangeNotifier {
   final _logger = Logger('TaskScreenViewModel');
   final GetTasksForListUseCase _getTasksForList;
   final SaveTaskUseCase _saveTask;
   final AddTaskToListUseCase _addTaskToList;
+  final GetThingsUseCase _getThings;
 
   List<Task> tasks = [];
+  List<Thing> availableThings = [];
   bool isLoading = false;
   String? error;
 
@@ -19,6 +23,7 @@ class TaskScreenViewModel extends ChangeNotifier {
     this._getTasksForList,
     this._saveTask,
     this._addTaskToList,
+    this._getThings,
   );
 
   Future<void> loadTasks(String listName) async {
@@ -39,10 +44,24 @@ class TaskScreenViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> addTask(String listName, String displayName) async {
+  Future<void> loadAvailableThings() async {
+    _logger.info('Loading available things for task creation');
+    try {
+      availableThings = await _getThings();
+      notifyListeners();
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to load things', e, stackTrace);
+    }
+  }
+
+  Future<void> addTask(String listName, String displayName, {List<String> instruments = const []}) async {
     _logger.info('Adding task $displayName to list $listName');
     try {
-      await _addTaskToList(listName: listName, displayName: displayName);
+      await _addTaskToList(
+        listName: listName,
+        displayName: displayName,
+        instruments: instruments,
+      );
       await loadTasks(listName); // Refresh list
     } catch (e, stackTrace) {
       _logger.severe('Failed to add task', e, stackTrace);
