@@ -1,4 +1,3 @@
-import '../../api/models/task.dart';
 import '../repositories/task_repository.dart';
 import '../repositories/task_list_repository.dart';
 

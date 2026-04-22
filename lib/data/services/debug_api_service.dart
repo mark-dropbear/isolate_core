@@ -15,7 +15,7 @@ class DebugApiService {
     );
 
     if (response.statusCode == 200) {
-      return response.body as String? ?? '';
+      return response.body ?? '';
     } else {
       _logger.warning('fetchDatasetDump failed: ${response.statusCode}');
       throw Exception('Failed to fetch dataset dump: ${response.statusCode}');
