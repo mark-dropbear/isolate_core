@@ -46,6 +46,9 @@ class MyApp extends StatelessWidget {
       saveTaskUseCase: saveTaskUseCase,
       addTaskToListUseCase: addTaskToListUseCase,
       debugApiService: debugApiService,
+      getThingsUseCase: getThingsUseCase,
+      deleteThingUseCase: deleteThingUseCase,
+      saveThingUseCase: saveThingUseCase,
     );
   }
 

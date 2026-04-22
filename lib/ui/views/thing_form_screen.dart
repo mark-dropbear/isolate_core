@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../api/models/thing.dart';
 import '../viewmodels/thing_detail_viewmodel.dart';
 
@@ -72,7 +73,7 @@ class _ThingFormScreenState extends State<ThingFormScreen> {
                               _nameController.text.trim(),
                             );
                             if (success && context.mounted) {
-                              Navigator.of(context).pop();
+                              context.pop();
                             }
                           },
                     child: widget.viewModel.isLoading

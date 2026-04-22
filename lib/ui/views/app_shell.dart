@@ -8,10 +8,14 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // For now, we only have one destination.
-    // We can determine the selected index based on the current location.
     final String location = GoRouterState.of(context).matchedLocation;
-    final int selectedIndex = location.startsWith('/tasks') || location == '/' ? 0 : 0;
+    
+    int selectedIndex = 0;
+    if (location.startsWith('/things')) {
+      selectedIndex = 1;
+    } else {
+      selectedIndex = 0;
+    }
 
     return Scaffold(
       body: Row(
@@ -21,14 +25,21 @@ class AppShell extends StatelessWidget {
             onDestinationSelected: (int index) {
               if (index == 0) {
                 context.go('/');
+              } else if (index == 1) {
+                context.go('/things');
               }
             },
             labelType: NavigationRailLabelType.all,
             destinations: const [
               NavigationRailDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: Text('Home'),
+                icon: Icon(Icons.check_box_outlined),
+                selectedIcon: Icon(Icons.check_box),
+                label: Text('Tasks'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.category_outlined),
+                selectedIcon: Icon(Icons.category),
+                label: Text('Things'),
               ),
             ],
           ),

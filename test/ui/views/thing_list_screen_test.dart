@@ -28,7 +28,6 @@ void main() {
         MaterialApp(
           home: ThingListScreen(
             viewModel: viewModel,
-            formScreenBuilder: (ctx, thing) => Container(),
           ),
         ),
       );
@@ -50,7 +49,6 @@ void main() {
         MaterialApp(
           home: ThingListScreen(
             viewModel: viewModel,
-            formScreenBuilder: (ctx, thing) => Container(),
           ),
         ),
       );
@@ -71,7 +69,6 @@ void main() {
         MaterialApp(
           home: ThingListScreen(
             viewModel: viewModel,
-            formScreenBuilder: (ctx, thing) => Container(),
           ),
         ),
       );

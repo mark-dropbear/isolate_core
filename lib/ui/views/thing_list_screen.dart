@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../api/models/thing.dart';
+import 'package:go_router/go_router.dart';
 import '../viewmodels/thing_list_viewmodel.dart';
 
 class ThingListScreen extends StatefulWidget {
   final ThingListViewModel viewModel;
-  final Widget Function(BuildContext context, Thing? thing) formScreenBuilder;
 
   const ThingListScreen({
     super.key,
     required this.viewModel,
-    required this.formScreenBuilder,
   });
 
   @override
@@ -83,12 +81,7 @@ class _ThingListScreenState extends State<ThingListScreen> {
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) =>
-                                widget.formScreenBuilder(ctx, thing),
-                          ),
-                        );
+                        await context.push('/things/edit', extra: thing);
                         widget.viewModel.loadThings();
                       },
                     ),
@@ -105,11 +98,7 @@ class _ThingListScreenState extends State<ThingListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (ctx) => widget.formScreenBuilder(ctx, null),
-            ),
-          );
+          await context.push('/things/new');
           widget.viewModel.loadThings();
         },
         child: const Icon(Icons.add),

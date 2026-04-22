@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:isolate_core/api/models/thing.dart';
 import 'package:isolate_core/domain/usecases/save_thing_usecase.dart';
 import 'package:isolate_core/ui/viewmodels/thing_detail_viewmodel.dart';
@@ -20,9 +21,25 @@ void main() {
     testWidgets('renders create mode when no existing thing is provided', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(home: ThingFormScreen(viewModel: viewModel)),
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Container(),
+          ),
+          GoRoute(
+            path: '/form',
+            builder: (context, state) => ThingFormScreen(viewModel: viewModel),
+          ),
+        ],
       );
+
+      await tester.pumpWidget(
+        MaterialApp.router(routerConfig: router),
+      );
+      router.push('/form');
+      await tester.pumpAndSettle();
 
       expect(find.text('Create Thing'), findsOneWidget);
       expect(find.text('Save'), findsOneWidget);
@@ -37,11 +54,25 @@ void main() {
     ) async {
       const existing = Thing(name: 'things/1', displayName: 'Existing Apple');
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ThingFormScreen(viewModel: viewModel, thing: existing),
-        ),
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Container(),
+          ),
+          GoRoute(
+            path: '/form',
+            builder: (context, state) => ThingFormScreen(viewModel: viewModel, thing: existing),
+          ),
+        ],
       );
+
+      await tester.pumpWidget(
+        MaterialApp.router(routerConfig: router),
+      );
+      router.push('/form');
+      await tester.pumpAndSettle();
 
       expect(find.text('Edit Thing'), findsOneWidget);
       expect(find.text('Save'), findsOneWidget);
@@ -54,9 +85,25 @@ void main() {
     testWidgets('filling form and tapping create saves the thing', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(
-        MaterialApp(home: ThingFormScreen(viewModel: viewModel)),
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Container(),
+          ),
+          GoRoute(
+            path: '/form',
+            builder: (context, state) => ThingFormScreen(viewModel: viewModel),
+          ),
+        ],
       );
+
+      await tester.pumpWidget(
+        MaterialApp.router(routerConfig: router),
+      );
+      router.push('/form');
+      await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextField), 'New Banana');
       await tester.pump(); // Register the text input
@@ -75,11 +122,25 @@ void main() {
       const existing = Thing(name: 'things/1', displayName: 'Old Apple');
       fakeRepo.seed([existing]);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: ThingFormScreen(viewModel: viewModel, thing: existing),
-        ),
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Container(),
+          ),
+          GoRoute(
+            path: '/form',
+            builder: (context, state) => ThingFormScreen(viewModel: viewModel, thing: existing),
+          ),
+        ],
       );
+
+      await tester.pumpWidget(
+        MaterialApp.router(routerConfig: router),
+      );
+      router.push('/form');
+      await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextField), 'Fresh Apple');
       await tester.pump();
