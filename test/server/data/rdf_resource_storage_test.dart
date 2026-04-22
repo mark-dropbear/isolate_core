@@ -34,7 +34,7 @@ void main() {
       final graph = dataset.getGraph(Vocab.getResourceIri('things/1'));
       expect(graph, isNotNull);
 
-      final triples = graph.match(predicate: Vocab.displayName);
+      final triples = graph.match(predicate: Vocab.name);
       expect(triples.isNotEmpty, isTrue);
       expect((triples.first.object as Literal).value, 'Test Thing');
     });
@@ -51,7 +51,7 @@ void main() {
       );
       expect(retrieved, isNotNull);
 
-      final displayNames = retrieved!.match(predicate: Vocab.displayName);
+      final displayNames = retrieved!.match(predicate: Vocab.name);
       expect((displayNames.first.object as Literal).value, 'Test Thing');
 
       final missing = await storage.getResource(
@@ -72,13 +72,13 @@ void main() {
       await storage.updateResource(
         Vocab.getResourceIri('things/1'),
         update.toDataset(),
-        updatePredicates: {Vocab.displayName},
+        updatePredicates: {Vocab.name},
       );
 
       final updated = await storage.getResource(
         Vocab.getResourceIri('things/1'),
       );
-      final displayNames = updated!.match(predicate: Vocab.displayName);
+      final displayNames = updated!.match(predicate: Vocab.name);
       expect((displayNames.first.object as Literal).value, 'Updated Name');
     });
 

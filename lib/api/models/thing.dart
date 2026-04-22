@@ -40,7 +40,7 @@ class Thing {
 
     final displayNames = graph.match(
       subject: subject,
-      predicate: Vocab.displayName,
+      predicate: Vocab.name,
     );
     final displayName = displayNames.isNotEmpty
         ? (displayNames.first.object as Literal).value
@@ -66,7 +66,7 @@ class Thing {
     dataset.add(
       Quad(
         subject: subject,
-        predicate: Vocab.displayName,
+        predicate: Vocab.name,
         object: Literal(displayName),
         graph: graphName,
       ),

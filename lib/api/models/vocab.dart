@@ -6,13 +6,12 @@ class Vocab {
   static const schemaPrefix = 'https://schema.org/';
 
   // Classes
-  static final thingClass = NamedNode('${vocabPrefix}Thing');
+  static final thingClass = NamedNode('${schemaPrefix}Thing');
   static final itemListClass = NamedNode('${schemaPrefix}ItemList');
   static final listItemClass = NamedNode('${schemaPrefix}ListItem');
   static final actionClass = NamedNode('${schemaPrefix}Action');
 
   // Properties
-  static final displayName = NamedNode('${vocabPrefix}displayName');
   static final name = NamedNode('${schemaPrefix}name');
   static final description = NamedNode('${schemaPrefix}description');
   static final itemListElement = NamedNode('${schemaPrefix}itemListElement');
@@ -20,6 +19,7 @@ class Vocab {
   static final item = NamedNode('${schemaPrefix}item');
   static final actionStatus = NamedNode('${schemaPrefix}actionStatus');
   static final endTime = NamedNode('${schemaPrefix}endTime');
+  static final instrument = NamedNode('${schemaPrefix}instrument');
 
   // Action Statuses
   static final completedActionStatus =
@@ -45,8 +45,6 @@ class Vocab {
     for (final field in fields) {
       switch (field) {
         case 'displayName':
-          predicates.add(displayName);
-          break;
         case 'name':
           predicates.add(name);
           break;
@@ -55,6 +53,9 @@ class Vocab {
           break;
         case 'actionStatus':
           predicates.add(actionStatus);
+          break;
+        case 'instrument':
+          predicates.add(instrument);
           break;
       }
     }

@@ -103,7 +103,7 @@ void main() {
       final updateThing = Thing(name: createdName, displayName: 'New Name');
       final patchReq = TransportRequest(
         method: 'PATCH',
-        path: '/$createdName?updateMask=displayName',
+        path: '/$createdName?updateMask=name',
         body: nQuadsCodec.encode(updateThing.toDataset()),
       );
       final patchRes = await apiServer.handleRequest(patchReq);

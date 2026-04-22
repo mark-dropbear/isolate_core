@@ -34,7 +34,7 @@ class ThingRepositoryImpl implements ThingRepository {
   Future<Thing> updateThing(Thing thing) async {
     _logger.info('updateThing(${thing.name})');
     return _apiService.updateThing(
-      UpdateThingRequest(thing: thing, updateMask: ['displayName']),
+      UpdateThingRequest(thing: thing, updateMask: ['name']),
     );
   }
 
