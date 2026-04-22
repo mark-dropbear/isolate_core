@@ -22,109 +22,101 @@ class ServerRouter {
 
     try {
       final uri = Uri.parse(request.path);
-      final path = uri.path;
+      // Clean path segments to ignore empty ones (e.g., from trailing slashes)
+      final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList();
 
-      if (path == '/things') {
-        if (request.method == 'GET') {
-          return await _thingController.handleList(uri);
-        } else if (request.method == 'POST') {
-          return await _thingController.handleCreate(request);
-        } else {
-          return const TransportResponse(statusCode: 405);
-        }
-      } else if (path.startsWith('/things/')) {
-        ResourceName resourceName;
-        try {
-          resourceName = ResourceName.parse(path.substring(1));
-        } on FormatException {
-          return const TransportResponse(statusCode: 400);
-        }
-        final name = resourceName.toString();
+      return await switch ((request.method, segments)) {
+        // --- Debug ---
+        ('GET', ['debug', 'dump']) => _taskListController.handleDump(),
 
-        if (request.method == 'GET') {
-          return await _thingController.handleGet(name);
-        } else if (request.method == 'PATCH') {
-          return await _thingController.handleUpdate(name, request, uri);
-        } else if (request.method == 'DELETE') {
-          return await _thingController.handleDelete(name);
-        } else {
-          return const TransportResponse(statusCode: 405);
-        }
-      } else if (path == '/tasks') {
-        if (request.method == 'GET') {
-          return await _taskController.handleList(uri);
-        } else if (request.method == 'POST') {
-          return await _taskController.handleCreate(request);
-        } else {
-          return const TransportResponse(statusCode: 405);
-        }
-      } else if (path.startsWith('/tasks/')) {
-        ResourceName resourceName;
-        try {
-          resourceName = ResourceName.parse(path.substring(1));
-        } on FormatException {
-          return const TransportResponse(statusCode: 400);
-        }
-        final name = resourceName.toString();
+        // --- Things ---
+        ('GET', ['things']) => _thingController.handleList(uri),
+        ('POST', ['things']) => _thingController.handleCreate(request),
+        (final method, ['things', ...final rest]) when rest.isNotEmpty => switch (method) {
+          'GET' => _handleGet('things/${rest.join('/')}', _thingController.handleGet),
+          'PATCH' => _handleUpdate('things/${rest.join('/')}', request, uri, _thingController.handleUpdate),
+          'DELETE' => _handleDelete('things/${rest.join('/')}', _thingController.handleDelete),
+          _ => Future.value(const TransportResponse(statusCode: 405)),
+        },
 
-        if (request.method == 'GET') {
-          return await _taskController.handleGet(name);
-        } else if (request.method == 'PATCH') {
-          return await _taskController.handleUpdate(name, request, uri);
-        } else if (request.method == 'DELETE') {
-          return await _taskController.handleDelete(name);
-        } else {
-          return const TransportResponse(statusCode: 405);
-        }
-      } else if (path == '/taskLists') {
-        if (request.method == 'GET') {
-          return await _taskListController.handleList(uri);
-        } else if (request.method == 'POST') {
-          return await _taskListController.handleCreate(request);
-        } else {
-          return const TransportResponse(statusCode: 405);
-        }
-      } else if (path.startsWith('/taskLists/')) {
-        final parts = path.substring(1).split('/');
-        if (parts.length >= 3 && parts[2] == 'tasks') {
-          // Sub-collection: /taskLists/{id}/tasks
-          final listName = '${parts[0]}/${parts[1]}';
-          if (request.method == 'GET') {
-            return await _taskListController.handleListTasks(listName);
-          } else {
-            return const TransportResponse(statusCode: 405);
-          }
-        }
+        // --- Tasks ---
+        ('GET', ['tasks']) => _taskController.handleList(uri),
+        ('POST', ['tasks']) => _taskController.handleCreate(request),
+        (final method, ['tasks', ...final rest]) when rest.isNotEmpty => switch (method) {
+          'GET' => _handleGet('tasks/${rest.join('/')}', _taskController.handleGet),
+          'PATCH' => _handleUpdate('tasks/${rest.join('/')}', request, uri, _taskController.handleUpdate),
+          'DELETE' => _handleDelete('tasks/${rest.join('/')}', _taskController.handleDelete),
+          _ => Future.value(const TransportResponse(statusCode: 405)),
+        },
 
-        ResourceName resourceName;
-        try {
-          resourceName = ResourceName.parse(path.substring(1));
-        } on FormatException {
-          return const TransportResponse(statusCode: 400);
-        }
-        final name = resourceName.toString();
+        // --- TaskLists ---
+        ('GET', ['taskLists']) => _taskListController.handleList(uri),
+        ('POST', ['taskLists']) => _taskListController.handleCreate(request),
+        
+        // Nested sub-collection
+        ('GET', ['taskLists', final id, 'tasks']) => _handleGetTasks('taskLists/$id'),
 
-        if (request.method == 'GET') {
-          return await _taskListController.handleGet(name);
-        } else if (request.method == 'PATCH') {
-          return await _taskListController.handleUpdate(name, request, uri);
-        } else if (request.method == 'DELETE') {
-          return await _taskListController.handleDelete(name);
-        } else {
-          return const TransportResponse(statusCode: 405);
-        }
-      } else if (path == '/debug/dump') {
-        if (request.method == 'GET') {
-          return await _taskListController.handleDump();
-        } else {
-          return const TransportResponse(statusCode: 405);
-        }
-      }
+        (final method, ['taskLists', ...final rest]) when rest.isNotEmpty => switch (method) {
+          'GET' => _handleGet('taskLists/${rest.join('/')}', _taskListController.handleGet),
+          'PATCH' => _handleUpdate('taskLists/${rest.join('/')}', request, uri, _taskListController.handleUpdate),
+          'DELETE' => _handleDelete('taskLists/${rest.join('/')}', _taskListController.handleDelete),
+          _ => Future.value(const TransportResponse(statusCode: 405)),
+        },
 
-      return const TransportResponse(statusCode: 404);
+        // --- Fallbacks ---
+        // Catch-all for unsupported methods on base collections
+        (_, ['things']) || (_, ['tasks']) || (_, ['taskLists']) => 
+            Future.value(const TransportResponse(statusCode: 405)),
+            
+        _ => Future.value(const TransportResponse(statusCode: 404)),
+      };
     } catch (e, stackTrace) {
       _logger.severe('Routing error', e, stackTrace);
       return const TransportResponse(statusCode: 500);
+    }
+  }
+
+  // --- Helper Methods to handle ResourceName parsing and error handling ---
+
+  Future<TransportResponse> _handleGet(
+      String rawName, Future<TransportResponse> Function(String) handler) async {
+    try {
+      final name = ResourceName.parse(rawName).toString();
+      return await handler(name);
+    } on FormatException {
+      return const TransportResponse(statusCode: 400);
+    }
+  }
+
+  Future<TransportResponse> _handleUpdate(
+      String rawName,
+      TransportRequest request,
+      Uri uri,
+      Future<TransportResponse> Function(String, TransportRequest, Uri) handler) async {
+    try {
+      final name = ResourceName.parse(rawName).toString();
+      return await handler(name, request, uri);
+    } on FormatException {
+      return const TransportResponse(statusCode: 400);
+    }
+  }
+
+  Future<TransportResponse> _handleDelete(
+      String rawName, Future<TransportResponse> Function(String) handler) async {
+    try {
+      final name = ResourceName.parse(rawName).toString();
+      return await handler(name);
+    } on FormatException {
+      return const TransportResponse(statusCode: 400);
+    }
+  }
+
+  Future<TransportResponse> _handleGetTasks(String rawListName) async {
+    try {
+      final name = ResourceName.parse(rawListName).toString();
+      return await _taskListController.handleListTasks(name);
+    } on FormatException {
+      return const TransportResponse(statusCode: 400);
     }
   }
 }
