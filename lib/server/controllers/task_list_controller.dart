@@ -120,13 +120,21 @@ class TaskListController {
     }
   }
 
-  /// Returns the entire dataset for debugging
+  /// Returns the entire dataset for debugging, flattened into a canonicalized Union Graph
   Future<TransportResponse> handleDump() async {
     try {
       final dataset = await _storage.getAllResources();
+      // Flatten the dataset into a single Union Graph (stripping the named graph identifiers)
+      final unionGraph = dataset.map((q) => Quad(
+            subject: q.subject,
+            predicate: q.predicate,
+            object: q.object,
+            // graph is omitted/null to place everything in the default graph
+          ));
+          
       return TransportResponse(
         statusCode: 200,
-        body: nQuadsCodec.encode(dataset),
+        body: rdfc10Canonicalizer.convert(unionGraph),
       );
     } catch (e) {
       return const TransportResponse(statusCode: 500);
