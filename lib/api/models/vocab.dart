@@ -10,6 +10,7 @@ class Vocab {
   static final itemListClass = NamedNode('${schemaPrefix}ItemList');
   static final listItemClass = NamedNode('${schemaPrefix}ListItem');
   static final actionClass = NamedNode('${schemaPrefix}Action');
+  static final personClass = NamedNode('${schemaPrefix}Person');
 
   // Properties
   static final name = NamedNode('${schemaPrefix}name');
@@ -20,6 +21,9 @@ class Vocab {
   static final actionStatus = NamedNode('${schemaPrefix}actionStatus');
   static final endTime = NamedNode('${schemaPrefix}endTime');
   static final instrument = NamedNode('${schemaPrefix}instrument');
+  static final givenName = NamedNode('${schemaPrefix}givenName');
+  static final familyName = NamedNode('${schemaPrefix}familyName');
+  static final jobTitle = NamedNode('${schemaPrefix}jobTitle');
 
   // Action Statuses
   static final completedActionStatus =
@@ -59,6 +63,15 @@ class Vocab {
           break;
         case 'instrument':
           predicates.add(instrument);
+          break;
+        case 'givenName':
+          predicates.add(givenName);
+          break;
+        case 'familyName':
+          predicates.add(familyName);
+          break;
+        case 'jobTitle':
+          predicates.add(jobTitle);
           break;
       }
     }

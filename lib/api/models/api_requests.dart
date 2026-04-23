@@ -1,6 +1,7 @@
 import 'package:rdf_dart/rdf_dart.dart';
 import 'vocab.dart';
 import 'thing.dart';
+import 'person.dart';
 import 'task.dart';
 import 'task_list.dart';
 
@@ -159,5 +160,58 @@ class ListTaskListsResponse {
     }
 
     return ListTaskListsResponse(taskLists: taskLists);
+  }
+}
+
+// Person Requests
+class GetPersonRequest {
+  final String name;
+  const GetPersonRequest({required this.name});
+}
+
+class CreatePersonRequest {
+  final Person person;
+  final String? personId;
+  const CreatePersonRequest({required this.person, this.personId});
+}
+
+class UpdatePersonRequest {
+  final Person person;
+  final List<String>? updateMask;
+  const UpdatePersonRequest({required this.person, this.updateMask});
+}
+
+class DeletePersonRequest {
+  final String name;
+  const DeletePersonRequest({required this.name});
+}
+
+class ListPersonsRequest {
+  final int? pageSize;
+  final String? pageToken;
+  const ListPersonsRequest({this.pageSize, this.pageToken});
+}
+
+class ListPersonsResponse {
+  final List<Person> persons;
+  final String? nextPageToken;
+
+  const ListPersonsResponse({required this.persons, this.nextPageToken});
+
+  factory ListPersonsResponse.fromDataset(Dataset dataset) {
+    final List<Person> persons = [];
+    final graphNames =
+        dataset.map((q) => q.graph).whereType<NamedNode>().toSet();
+
+    for (final graphName in graphNames) {
+      final resourceName = Vocab.getResourceName(graphName);
+      try {
+        persons.add(Person.fromDataset(dataset, resourceName));
+      } catch (_) {
+        // Skip invalid
+      }
+    }
+
+    return ListPersonsResponse(persons: persons);
   }
 }
