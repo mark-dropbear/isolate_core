@@ -72,12 +72,17 @@ class TaskScreenViewModel extends ChangeNotifier {
 
   Future<void> toggleTaskStatus(Task task) async {
     _logger.info('Toggling status for task ${task.name}');
-    final newStatus = task.isCompleted
-        ? 'https://schema.org/PotentialActionStatus'
-        : 'https://schema.org/CompletedActionStatus';
+    final isNowCompleted = !task.isCompleted;
+    final newStatus = isNowCompleted
+        ? 'https://schema.org/CompletedActionStatus'
+        : 'https://schema.org/PotentialActionStatus';
 
     try {
-      final updatedTask = task.copyWith(actionStatus: newStatus);
+      final updatedTask = task.copyWith(
+        actionStatus: newStatus,
+        endTime: isNowCompleted ? DateTime.now().toUtc() : null,
+        clearEndTime: !isNowCompleted,
+      );
       await _saveTask(updatedTask);
       final index = tasks.indexWhere((t) => t.name == task.name);
       if (index != -1) {

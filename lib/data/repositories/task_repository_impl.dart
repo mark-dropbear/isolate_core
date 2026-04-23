@@ -41,7 +41,7 @@ class TaskRepositoryImpl implements TaskRepository {
     return _apiService.updateTask(
       UpdateTaskRequest(
         task: task,
-        updateMask: ['name', 'description', 'actionStatus', 'instrument'],
+        updateMask: ['name', 'description', 'actionStatus', 'instrument', 'endTime'],
       ),
     );
   }

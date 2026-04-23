@@ -7,6 +7,7 @@ class Task {
   final String description;
   final String actionStatus; // schema:CompletedActionStatus or PotentialActionStatus
   final List<String> instruments; // List of Thing resource names
+  final DateTime? endTime;
 
   const Task({
     required this.name,
@@ -14,6 +15,7 @@ class Task {
     this.description = '',
     this.actionStatus = 'https://schema.org/PotentialActionStatus',
     this.instruments = const [],
+    this.endTime,
   });
 
   bool get isCompleted =>
@@ -30,6 +32,9 @@ class Task {
               ?.map((e) => e as String)
               .toList() ??
           [],
+      endTime: json['endTime'] != null
+          ? DateTime.parse(json['endTime'] as String)
+          : null,
     );
   }
 
@@ -40,6 +45,7 @@ class Task {
       'description': description,
       'actionStatus': actionStatus,
       'instruments': instruments,
+      if (endTime != null) 'endTime': endTime!.toIso8601String(),
     };
   }
 
@@ -91,12 +97,22 @@ class Task {
         .map((t) => Vocab.getResourceName(t.object as NamedNode))
         .toList();
 
+    final endTimes = graph.match(
+      subject: subject,
+      predicate: Vocab.endTime,
+    );
+    final endTimeStr = endTimes.isNotEmpty
+        ? (endTimes.first.object as Literal).value
+        : null;
+    final endTime = endTimeStr != null ? DateTime.tryParse(endTimeStr) : null;
+
     return Task(
       name: name,
       displayName: displayName,
       description: description,
       actionStatus: actionStatus,
       instruments: instruments,
+      endTime: endTime,
     );
   }
 
@@ -154,6 +170,17 @@ class Task {
       );
     }
 
+    if (endTime != null) {
+      dataset.add(
+        Quad(
+          subject: subject,
+          predicate: Vocab.endTime,
+          object: Literal(endTime!.toUtc().toIso8601String(), datatype: Xsd.dateTime),
+          graph: graphName,
+        ),
+      );
+    }
+
     return dataset;
   }
 
@@ -163,6 +190,8 @@ class Task {
     String? description,
     String? actionStatus,
     List<String>? instruments,
+    DateTime? endTime,
+    bool clearEndTime = false,
   }) {
     return Task(
       name: name ?? this.name,
@@ -170,6 +199,7 @@ class Task {
       description: description ?? this.description,
       actionStatus: actionStatus ?? this.actionStatus,
       instruments: instruments ?? this.instruments,
+      endTime: clearEndTime ? null : (endTime ?? this.endTime),
     );
   }
 }

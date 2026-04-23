@@ -54,6 +54,9 @@ class Vocab {
         case 'actionStatus':
           predicates.add(actionStatus);
           break;
+        case 'endTime':
+          predicates.add(endTime);
+          break;
         case 'instrument':
           predicates.add(instrument);
           break;
