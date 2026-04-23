@@ -4,17 +4,20 @@ import '../../transport/transport_models.dart';
 import '../controllers/thing_controller.dart';
 import '../controllers/task_controller.dart';
 import '../controllers/task_list_controller.dart';
+import '../controllers/person_controller.dart';
 
 class ServerRouter {
   final _logger = Logger('ServerRouter');
   final ThingController _thingController;
   final TaskController _taskController;
   final TaskListController _taskListController;
+  final PersonController _personController;
 
   ServerRouter(
     this._thingController,
     this._taskController,
     this._taskListController,
+    this._personController,
   );
 
   Future<TransportResponse> route(TransportRequest request) async {
@@ -36,6 +39,16 @@ class ServerRouter {
           'GET' => _handleGet('things/${rest.join('/')}', _thingController.handleGet),
           'PATCH' => _handleUpdate('things/${rest.join('/')}', request, uri, _thingController.handleUpdate),
           'DELETE' => _handleDelete('things/${rest.join('/')}', _thingController.handleDelete),
+          _ => Future.value(const TransportResponse(statusCode: 405)),
+        },
+
+        // --- Persons ---
+        ('GET', ['persons']) => _personController.handleList(),
+        ('POST', ['persons']) => _personController.handleCreate(request),
+        (final method, ['persons', ...final rest]) when rest.isNotEmpty => switch (method) {
+          'GET' => _handleGet('persons/${rest.join('/')}', _personController.handleGet),
+          'PATCH' => _handleUpdate('persons/${rest.join('/')}', request, uri, _personController.handleUpdate),
+          'DELETE' => _handleDelete('persons/${rest.join('/')}', _personController.handleDelete),
           _ => Future.value(const TransportResponse(statusCode: 405)),
         },
 
@@ -65,7 +78,7 @@ class ServerRouter {
 
         // --- Fallbacks ---
         // Catch-all for unsupported methods on base collections
-        (_, ['things']) || (_, ['tasks']) || (_, ['taskLists']) => 
+        (_, ['things']) || (_, ['tasks']) || (_, ['taskLists']) || (_, ['persons']) => 
             Future.value(const TransportResponse(statusCode: 405)),
             
         _ => Future.value(const TransportResponse(statusCode: 404)),
