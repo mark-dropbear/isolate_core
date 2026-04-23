@@ -5,15 +5,20 @@ import 'dart:developer' as developer;
 import 'domain/usecases/get_things_usecase.dart';
 import 'domain/usecases/delete_thing_usecase.dart';
 import 'domain/usecases/save_thing_usecase.dart';
+import 'domain/usecases/get_persons_usecase.dart';
+import 'domain/usecases/delete_person_usecase.dart';
+import 'domain/usecases/save_person_usecase.dart';
 import 'domain/usecases/get_task_lists_usecase.dart';
 import 'domain/usecases/get_tasks_for_list_usecase.dart';
 import 'domain/usecases/save_task_usecase.dart';
 import 'domain/usecases/save_task_list_usecase.dart';
 import 'domain/usecases/add_task_to_list_usecase.dart';
 import 'data/repositories/thing_repository_impl.dart';
+import 'data/repositories/person_repository_impl.dart';
 import 'data/repositories/task_repository_impl.dart';
 import 'data/repositories/task_list_repository_impl.dart';
 import 'data/services/thing_api_service.dart';
+import 'data/services/person_api_service.dart';
 import 'data/services/task_api_service.dart';
 import 'data/services/task_list_api_service.dart';
 import 'data/services/debug_api_service.dart';
@@ -52,6 +57,13 @@ void main() async {
   final deleteThingUseCase = DeleteThingUseCase(thingRepository);
   final saveThingUseCase = SaveThingUseCase(thingRepository);
 
+  // Person dependencies
+  final personApiService = PersonApiService(transportClient);
+  final personRepository = PersonRepositoryImpl(personApiService);
+  final getPersonsUseCase = GetPersonsUseCase(personRepository);
+  final deletePersonUseCase = DeletePersonUseCase(personRepository);
+  final savePersonUseCase = SavePersonUseCase(personRepository);
+
   // Task & TaskList dependencies
   final taskApiService = TaskApiService(transportClient);
   final taskListApiService = TaskListApiService(transportClient);
@@ -72,6 +84,9 @@ void main() async {
       getThingsUseCase: getThingsUseCase,
       deleteThingUseCase: deleteThingUseCase,
       saveThingUseCase: saveThingUseCase,
+      getPersonsUseCase: getPersonsUseCase,
+      deletePersonUseCase: deletePersonUseCase,
+      savePersonUseCase: savePersonUseCase,
       getTaskListsUseCase: getTaskListsUseCase,
       getTasksForListUseCase: getTasksForListUseCase,
       saveTaskUseCase: saveTaskUseCase,

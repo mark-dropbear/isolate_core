@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'domain/usecases/get_things_usecase.dart';
 import 'domain/usecases/delete_thing_usecase.dart';
 import 'domain/usecases/save_thing_usecase.dart';
+import 'domain/usecases/get_persons_usecase.dart';
+import 'domain/usecases/delete_person_usecase.dart';
+import 'domain/usecases/save_person_usecase.dart';
 import 'domain/usecases/get_task_lists_usecase.dart';
 import 'domain/usecases/get_tasks_for_list_usecase.dart';
 import 'domain/usecases/save_task_usecase.dart';
@@ -17,6 +20,10 @@ class MyApp extends StatelessWidget {
   final GetThingsUseCase getThingsUseCase;
   final DeleteThingUseCase deleteThingUseCase;
   final SaveThingUseCase saveThingUseCase;
+
+  final GetPersonsUseCase getPersonsUseCase;
+  final DeletePersonUseCase deletePersonUseCase;
+  final SavePersonUseCase savePersonUseCase;
 
   final GetTaskListsUseCase getTaskListsUseCase;
   final GetTasksForListUseCase getTasksForListUseCase;
@@ -32,6 +39,9 @@ class MyApp extends StatelessWidget {
     required this.getThingsUseCase,
     required this.deleteThingUseCase,
     required this.saveThingUseCase,
+    required this.getPersonsUseCase,
+    required this.deletePersonUseCase,
+    required this.savePersonUseCase,
     required this.getTaskListsUseCase,
     required this.getTasksForListUseCase,
     required this.saveTaskUseCase,
@@ -49,6 +59,9 @@ class MyApp extends StatelessWidget {
       getThingsUseCase: getThingsUseCase,
       deleteThingUseCase: deleteThingUseCase,
       saveThingUseCase: saveThingUseCase,
+      getPersonsUseCase: getPersonsUseCase,
+      deletePersonUseCase: deletePersonUseCase,
+      savePersonUseCase: savePersonUseCase,
     );
   }
 

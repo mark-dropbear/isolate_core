@@ -13,6 +13,8 @@ class AppShell extends StatelessWidget {
     int selectedIndex = 0;
     if (location.startsWith('/things')) {
       selectedIndex = 1;
+    } else if (location.startsWith('/persons')) {
+      selectedIndex = 2;
     } else {
       selectedIndex = 0;
     }
@@ -27,6 +29,8 @@ class AppShell extends StatelessWidget {
                 context.go('/');
               } else if (index == 1) {
                 context.go('/things');
+              } else if (index == 2) {
+                context.go('/persons');
               }
             },
             labelType: NavigationRailLabelType.all,
@@ -40,6 +44,11 @@ class AppShell extends StatelessWidget {
                 icon: Icon(Icons.category_outlined),
                 selectedIcon: Icon(Icons.category),
                 label: Text('Things'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.people_outline),
+                selectedIcon: Icon(Icons.people),
+                label: Text('People'),
               ),
             ],
           ),
