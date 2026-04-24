@@ -4,6 +4,7 @@ import 'thing.dart';
 import 'person.dart';
 import 'task.dart';
 import 'task_list.dart';
+import 'organization.dart';
 
 // Thing Requests
 class GetThingRequest {
@@ -213,5 +214,58 @@ class ListPersonsResponse {
     }
 
     return ListPersonsResponse(persons: persons);
+  }
+}
+
+// Organization Requests
+class GetOrganizationRequest {
+  final String name;
+  const GetOrganizationRequest({required this.name});
+}
+
+class CreateOrganizationRequest {
+  final Organization organization;
+  final String? organizationId;
+  const CreateOrganizationRequest({required this.organization, this.organizationId});
+}
+
+class UpdateOrganizationRequest {
+  final Organization organization;
+  final List<String>? updateMask;
+  const UpdateOrganizationRequest({required this.organization, this.updateMask});
+}
+
+class DeleteOrganizationRequest {
+  final String name;
+  const DeleteOrganizationRequest({required this.name});
+}
+
+class ListOrganizationsRequest {
+  final int? pageSize;
+  final String? pageToken;
+  const ListOrganizationsRequest({this.pageSize, this.pageToken});
+}
+
+class ListOrganizationsResponse {
+  final List<Organization> organizations;
+  final String? nextPageToken;
+
+  const ListOrganizationsResponse({required this.organizations, this.nextPageToken});
+
+  factory ListOrganizationsResponse.fromDataset(Dataset dataset) {
+    final List<Organization> organizations = [];
+    final graphNames =
+        dataset.map((q) => q.graph).whereType<NamedNode>().toSet();
+
+    for (final graphName in graphNames) {
+      final resourceName = Vocab.getResourceName(graphName);
+      try {
+        organizations.add(Organization.fromDataset(dataset, resourceName));
+      } catch (_) {
+        // Skip invalid
+      }
+    }
+
+    return ListOrganizationsResponse(organizations: organizations);
   }
 }

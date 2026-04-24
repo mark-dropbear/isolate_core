@@ -11,6 +11,11 @@ class Vocab {
   static final listItemClass = NamedNode('${schemaPrefix}ListItem');
   static final actionClass = NamedNode('${schemaPrefix}Action');
   static final personClass = NamedNode('${schemaPrefix}Person');
+  static final organizationClass = NamedNode('${schemaPrefix}Organization');
+  static final ngoClass = NamedNode('${schemaPrefix}NGO');
+  static final governmentOrganizationClass = NamedNode('${schemaPrefix}GovernmentOrganization');
+  static final localBusinessClass = NamedNode('${schemaPrefix}LocalBusiness');
+  static final onlineBusinessClass = NamedNode('${schemaPrefix}OnlineBusiness');
 
   // Properties
   static final name = NamedNode('${schemaPrefix}name');
@@ -24,6 +29,8 @@ class Vocab {
   static final givenName = NamedNode('${schemaPrefix}givenName');
   static final familyName = NamedNode('${schemaPrefix}familyName');
   static final jobTitle = NamedNode('${schemaPrefix}jobTitle');
+  static final legalName = NamedNode('${schemaPrefix}legalName');
+  static final url = NamedNode('${schemaPrefix}url');
 
   // Action Statuses
   static final completedActionStatus =
@@ -72,6 +79,12 @@ class Vocab {
           break;
         case 'jobTitle':
           predicates.add(jobTitle);
+          break;
+        case 'legalName':
+          predicates.add(legalName);
+          break;
+        case 'url':
+          predicates.add(url);
           break;
       }
     }

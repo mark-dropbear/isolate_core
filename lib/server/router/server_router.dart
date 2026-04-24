@@ -5,6 +5,7 @@ import '../controllers/thing_controller.dart';
 import '../controllers/task_controller.dart';
 import '../controllers/task_list_controller.dart';
 import '../controllers/person_controller.dart';
+import '../controllers/organization_controller.dart';
 
 class ServerRouter {
   final _logger = Logger('ServerRouter');
@@ -12,12 +13,14 @@ class ServerRouter {
   final TaskController _taskController;
   final TaskListController _taskListController;
   final PersonController _personController;
+  final OrganizationController _organizationController;
 
   ServerRouter(
     this._thingController,
     this._taskController,
     this._taskListController,
     this._personController,
+    this._organizationController,
   );
 
   Future<TransportResponse> route(TransportRequest request) async {
@@ -52,6 +55,16 @@ class ServerRouter {
           _ => Future.value(const TransportResponse(statusCode: 405)),
         },
 
+        // --- Organizations ---
+        ('GET', ['organizations']) => _organizationController.handleList(),
+        ('POST', ['organizations']) => _organizationController.handleCreate(request),
+        (final method, ['organizations', ...final rest]) when rest.isNotEmpty => switch (method) {
+          'GET' => _handleGet('organizations/${rest.join('/')}', _organizationController.handleGet),
+          'PATCH' => _handleUpdate('organizations/${rest.join('/')}', request, uri, _organizationController.handleUpdate),
+          'DELETE' => _handleDelete('organizations/${rest.join('/')}', _organizationController.handleDelete),
+          _ => Future.value(const TransportResponse(statusCode: 405)),
+        },
+
         // --- Tasks ---
         ('GET', ['tasks']) => _taskController.handleList(uri),
         ('POST', ['tasks']) => _taskController.handleCreate(request),
@@ -78,7 +91,7 @@ class ServerRouter {
 
         // --- Fallbacks ---
         // Catch-all for unsupported methods on base collections
-        (_, ['things']) || (_, ['tasks']) || (_, ['taskLists']) || (_, ['persons']) => 
+        (_, ['things']) || (_, ['tasks']) || (_, ['taskLists']) || (_, ['persons']) || (_, ['organizations']) => 
             Future.value(const TransportResponse(statusCode: 405)),
             
         _ => Future.value(const TransportResponse(statusCode: 404)),

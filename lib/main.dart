@@ -8,6 +8,9 @@ import 'domain/usecases/save_thing_usecase.dart';
 import 'domain/usecases/get_persons_usecase.dart';
 import 'domain/usecases/delete_person_usecase.dart';
 import 'domain/usecases/save_person_usecase.dart';
+import 'domain/usecases/get_organizations_usecase.dart';
+import 'domain/usecases/delete_organization_usecase.dart';
+import 'domain/usecases/save_organization_usecase.dart';
 import 'domain/usecases/get_task_lists_usecase.dart';
 import 'domain/usecases/get_tasks_for_list_usecase.dart';
 import 'domain/usecases/save_task_usecase.dart';
@@ -15,10 +18,12 @@ import 'domain/usecases/save_task_list_usecase.dart';
 import 'domain/usecases/add_task_to_list_usecase.dart';
 import 'data/repositories/thing_repository_impl.dart';
 import 'data/repositories/person_repository_impl.dart';
+import 'data/repositories/organization_repository_impl.dart';
 import 'data/repositories/task_repository_impl.dart';
 import 'data/repositories/task_list_repository_impl.dart';
 import 'data/services/thing_api_service.dart';
 import 'data/services/person_api_service.dart';
+import 'data/services/organization_api_service.dart';
 import 'data/services/task_api_service.dart';
 import 'data/services/task_list_api_service.dart';
 import 'data/services/debug_api_service.dart';
@@ -64,6 +69,13 @@ void main() async {
   final deletePersonUseCase = DeletePersonUseCase(personRepository);
   final savePersonUseCase = SavePersonUseCase(personRepository);
 
+  // Organization dependencies
+  final organizationApiService = OrganizationApiService(transportClient);
+  final organizationRepository = OrganizationRepositoryImpl(organizationApiService);
+  final getOrganizationsUseCase = GetOrganizationsUseCase(organizationRepository);
+  final deleteOrganizationUseCase = DeleteOrganizationUseCase(organizationRepository);
+  final saveOrganizationUseCase = SaveOrganizationUseCase(organizationRepository);
+
   // Task & TaskList dependencies
   final taskApiService = TaskApiService(transportClient);
   final taskListApiService = TaskListApiService(transportClient);
@@ -87,6 +99,9 @@ void main() async {
       getPersonsUseCase: getPersonsUseCase,
       deletePersonUseCase: deletePersonUseCase,
       savePersonUseCase: savePersonUseCase,
+      getOrganizationsUseCase: getOrganizationsUseCase,
+      deleteOrganizationUseCase: deleteOrganizationUseCase,
+      saveOrganizationUseCase: saveOrganizationUseCase,
       getTaskListsUseCase: getTaskListsUseCase,
       getTasksForListUseCase: getTasksForListUseCase,
       saveTaskUseCase: saveTaskUseCase,

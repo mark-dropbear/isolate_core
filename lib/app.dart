@@ -7,6 +7,9 @@ import 'domain/usecases/save_thing_usecase.dart';
 import 'domain/usecases/get_persons_usecase.dart';
 import 'domain/usecases/delete_person_usecase.dart';
 import 'domain/usecases/save_person_usecase.dart';
+import 'domain/usecases/get_organizations_usecase.dart';
+import 'domain/usecases/delete_organization_usecase.dart';
+import 'domain/usecases/save_organization_usecase.dart';
 import 'domain/usecases/get_task_lists_usecase.dart';
 import 'domain/usecases/get_tasks_for_list_usecase.dart';
 import 'domain/usecases/save_task_usecase.dart';
@@ -25,6 +28,10 @@ class MyApp extends StatelessWidget {
   final DeletePersonUseCase deletePersonUseCase;
   final SavePersonUseCase savePersonUseCase;
 
+  final GetOrganizationsUseCase getOrganizationsUseCase;
+  final DeleteOrganizationUseCase deleteOrganizationUseCase;
+  final SaveOrganizationUseCase saveOrganizationUseCase;
+
   final GetTaskListsUseCase getTaskListsUseCase;
   final GetTasksForListUseCase getTasksForListUseCase;
   final SaveTaskUseCase saveTaskUseCase;
@@ -42,6 +49,9 @@ class MyApp extends StatelessWidget {
     required this.getPersonsUseCase,
     required this.deletePersonUseCase,
     required this.savePersonUseCase,
+    required this.getOrganizationsUseCase,
+    required this.deleteOrganizationUseCase,
+    required this.saveOrganizationUseCase,
     required this.getTaskListsUseCase,
     required this.getTasksForListUseCase,
     required this.saveTaskUseCase,
@@ -62,6 +72,9 @@ class MyApp extends StatelessWidget {
       getPersonsUseCase: getPersonsUseCase,
       deletePersonUseCase: deletePersonUseCase,
       savePersonUseCase: savePersonUseCase,
+      getOrganizationsUseCase: getOrganizationsUseCase,
+      deleteOrganizationUseCase: deleteOrganizationUseCase,
+      saveOrganizationUseCase: saveOrganizationUseCase,
     );
   }
 

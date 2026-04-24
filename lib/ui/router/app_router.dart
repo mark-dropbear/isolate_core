@@ -10,6 +10,9 @@ import 'package:isolate_core/domain/usecases/save_thing_usecase.dart';
 import 'package:isolate_core/domain/usecases/get_persons_usecase.dart';
 import 'package:isolate_core/domain/usecases/delete_person_usecase.dart';
 import 'package:isolate_core/domain/usecases/save_person_usecase.dart';
+import 'package:isolate_core/domain/usecases/get_organizations_usecase.dart';
+import 'package:isolate_core/domain/usecases/delete_organization_usecase.dart';
+import 'package:isolate_core/domain/usecases/save_organization_usecase.dart';
 import 'package:isolate_core/data/services/debug_api_service.dart';
 import 'package:isolate_core/ui/viewmodels/task_list_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/task_screen_viewmodel.dart';
@@ -17,15 +20,20 @@ import 'package:isolate_core/ui/viewmodels/thing_list_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/thing_detail_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/person_list_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/person_form_viewmodel.dart';
+import 'package:isolate_core/ui/viewmodels/organization_list_viewmodel.dart';
+import 'package:isolate_core/ui/viewmodels/organization_form_viewmodel.dart';
 import 'package:isolate_core/ui/views/task_list_screen.dart';
 import 'package:isolate_core/ui/views/task_screen.dart';
 import 'package:isolate_core/ui/views/thing_list_screen.dart';
 import 'package:isolate_core/ui/views/thing_form_screen.dart';
 import 'package:isolate_core/ui/views/person_list_screen.dart';
 import 'package:isolate_core/ui/views/person_form_screen.dart';
+import 'package:isolate_core/ui/views/organization_list_screen.dart';
+import 'package:isolate_core/ui/views/organization_form_screen.dart';
 import 'package:isolate_core/ui/views/app_shell.dart';
 import 'package:isolate_core/api/models/thing.dart';
 import 'package:isolate_core/api/models/person.dart';
+import 'package:isolate_core/api/models/organization.dart';
 
 GoRouter createAppRouter({
   required GetTaskListsUseCase getTaskListsUseCase,
@@ -40,6 +48,9 @@ GoRouter createAppRouter({
   required GetPersonsUseCase getPersonsUseCase,
   required DeletePersonUseCase deletePersonUseCase,
   required SavePersonUseCase savePersonUseCase,
+  required GetOrganizationsUseCase getOrganizationsUseCase,
+  required DeleteOrganizationUseCase deleteOrganizationUseCase,
+  required SaveOrganizationUseCase saveOrganizationUseCase,
 }) {
   // Instantiate ViewModels once to prevent loss of state during GoRouter rebuilds
   final taskListViewModel = TaskListViewModel(
@@ -58,6 +69,11 @@ GoRouter createAppRouter({
     deletePersonUseCase,
   );
 
+  final organizationListViewModel = OrganizationListViewModel(
+    getOrganizationsUseCase,
+    deleteOrganizationUseCase,
+  );
+
   // We can reuse the same detail/screen viewmodels since their state is refreshed via load() methods or they are short-lived.
   final taskScreenViewModel = TaskScreenViewModel(
     getTasksForListUseCase,
@@ -68,6 +84,7 @@ GoRouter createAppRouter({
 
   final thingDetailViewModel = ThingDetailViewModel(saveThingUseCase);
   final personFormViewModel = PersonFormViewModel(savePersonUseCase);
+  final organizationFormViewModel = OrganizationFormViewModel(saveOrganizationUseCase);
 
   return GoRouter(
     initialLocation: '/',
@@ -139,6 +156,30 @@ GoRouter createAppRouter({
                   return PersonFormScreen(
                     viewModel: personFormViewModel,
                     person: person,
+                  );
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/organizations',
+            builder: (context, state) => OrganizationListScreen(
+              viewModel: organizationListViewModel,
+            ),
+            routes: [
+              GoRoute(
+                path: 'new',
+                builder: (context, state) => OrganizationFormScreen(
+                  viewModel: organizationFormViewModel,
+                ),
+              ),
+              GoRoute(
+                path: 'edit',
+                builder: (context, state) {
+                  final organization = state.extra as Organization?;
+                  return OrganizationFormScreen(
+                    viewModel: organizationFormViewModel,
+                    organization: organization,
                   );
                 },
               ),
