@@ -16,6 +16,7 @@ dependencies:
   rdf_dart:
     git:
       url: https://github.com/mark-dropbear/rdf_dart.git
+  url_launcher: ^6.3.2
   uuid: ^4.5.3
 
 dev_dependencies:

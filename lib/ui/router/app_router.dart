@@ -28,8 +28,10 @@ import 'package:isolate_core/ui/views/thing_list_screen.dart';
 import 'package:isolate_core/ui/views/thing_form_screen.dart';
 import 'package:isolate_core/ui/views/person_list_screen.dart';
 import 'package:isolate_core/ui/views/person_form_screen.dart';
+import 'package:isolate_core/ui/views/person_detail_screen.dart';
 import 'package:isolate_core/ui/views/organization_list_screen.dart';
 import 'package:isolate_core/ui/views/organization_form_screen.dart';
+import 'package:isolate_core/ui/views/organization_detail_screen.dart';
 import 'package:isolate_core/ui/views/app_shell.dart';
 import 'package:isolate_core/api/models/thing.dart';
 import 'package:isolate_core/api/models/person.dart';
@@ -144,6 +146,13 @@ GoRouter createAppRouter({
             ),
             routes: [
               GoRoute(
+                path: 'detail',
+                builder: (context, state) {
+                  final person = state.extra as Person;
+                  return PersonDetailScreen(person: person);
+                },
+              ),
+              GoRoute(
                 path: 'new',
                 builder: (context, state) => PersonFormScreen(
                   viewModel: personFormViewModel,
@@ -167,6 +176,13 @@ GoRouter createAppRouter({
               viewModel: organizationListViewModel,
             ),
             routes: [
+              GoRoute(
+                path: 'detail',
+                builder: (context, state) {
+                  final organization = state.extra as Organization;
+                  return OrganizationDetailScreen(organization: organization);
+                },
+              ),
               GoRoute(
                 path: 'new',
                 builder: (context, state) => OrganizationFormScreen(

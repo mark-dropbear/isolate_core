@@ -84,6 +84,11 @@ class _OrganizationListScreenState extends State<OrganizationListScreen> {
                   ],
                 ),
                 isThreeLine: organization.legalName.isNotEmpty,
+                onTap: () async {
+                  await context.push('/organizations/detail', extra: organization);
+                  // Reload when coming back to capture any edits
+                  widget.viewModel.loadOrganizations();
+                },
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

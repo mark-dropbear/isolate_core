@@ -86,6 +86,11 @@ class _PersonListScreenState extends State<PersonListScreen> {
                     Text('ID: ${person.name}', style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
+                onTap: () async {
+                  await context.push('/persons/detail', extra: person);
+                  // Reload when coming back to capture any edits
+                  widget.viewModel.loadPersons();
+                },
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
