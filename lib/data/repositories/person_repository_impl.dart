@@ -24,9 +24,9 @@ class PersonRepositoryImpl implements PersonRepository {
   }
 
   @override
-  Future<Person> createPerson(String givenName, String familyName, String jobTitle) async {
+  Future<Person> createPerson(String givenName, String familyName, String jobTitle, {List<String> worksFor = const []}) async {
     _logger.info('createPerson()');
-    final person = Person(name: '', givenName: givenName, familyName: familyName, jobTitle: jobTitle);
+    final person = Person(name: '', givenName: givenName, familyName: familyName, jobTitle: jobTitle, worksFor: worksFor);
     return _apiService.createPerson(CreatePersonRequest(person: person));
   }
 
@@ -34,7 +34,7 @@ class PersonRepositoryImpl implements PersonRepository {
   Future<Person> updatePerson(Person person) async {
     _logger.info('updatePerson(${person.name})');
     return _apiService.updatePerson(
-      UpdatePersonRequest(person: person, updateMask: ['givenName', 'familyName', 'jobTitle']),
+      UpdatePersonRequest(person: person, updateMask: ['givenName', 'familyName', 'jobTitle', 'worksFor']),
     );
   }
 

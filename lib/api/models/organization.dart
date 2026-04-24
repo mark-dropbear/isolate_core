@@ -28,6 +28,7 @@ class Organization {
   final String legalName;
   final String description;
   final String url;
+  final List<String> employees; // List of Person resource names
 
   Organization({
     required this.name,
@@ -36,6 +37,7 @@ class Organization {
     this.legalName = '',
     this.description = '',
     this.url = '',
+    this.employees = const [],
   }) {
     if (displayName.isEmpty) {
       throw ArgumentError('An Organization must have a name (displayName).');
@@ -53,6 +55,10 @@ class Organization {
       legalName: json['legalName'] as String? ?? '',
       description: json['description'] as String? ?? '',
       url: json['url'] as String? ?? '',
+      employees: (json['employees'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -64,6 +70,7 @@ class Organization {
       'legalName': legalName,
       'description': description,
       'url': url,
+      'employees': employees,
     };
   }
 
@@ -122,6 +129,14 @@ class Organization {
         ? (urls.first.object as NamedNode).value
         : '';
 
+    final employeeTriples = graph.match(
+      subject: subject,
+      predicate: Vocab.employee,
+    );
+    final employees = employeeTriples
+        .map((t) => Vocab.getResourceName(t.object as NamedNode))
+        .toList();
+
     return Organization(
       name: name,
       displayName: displayName,
@@ -129,6 +144,7 @@ class Organization {
       legalName: legalName,
       description: description,
       url: url,
+      employees: employees,
     );
   }
 
@@ -188,6 +204,17 @@ class Organization {
       );
     }
 
+    for (final employeeName in employees) {
+      dataset.add(
+        Quad(
+          subject: subject,
+          predicate: Vocab.employee,
+          object: Vocab.getResourceIri(employeeName),
+          graph: graphName,
+        ),
+      );
+    }
+
     return dataset;
   }
 
@@ -198,6 +225,7 @@ class Organization {
     String? legalName,
     String? description,
     String? url,
+    List<String>? employees,
   }) {
     return Organization(
       name: name ?? this.name,
@@ -206,6 +234,7 @@ class Organization {
       legalName: legalName ?? this.legalName,
       description: description ?? this.description,
       url: url ?? this.url,
+      employees: employees ?? this.employees,
     );
   }
 }

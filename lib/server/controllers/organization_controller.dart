@@ -4,6 +4,7 @@ import '../../api/models/vocab.dart';
 import '../../transport/transport_models.dart';
 import '../data/resource_storage.dart';
 import '../utils/rdf_utils.dart';
+import '../utils/link_sync_utils.dart';
 
 class OrganizationController {
   final ResourceStorage _storage;
@@ -54,6 +55,16 @@ class OrganizationController {
       );
 
       final created = await _storage.saveResource(targetIri, rewrittenDataset);
+      
+      await LinkSyncUtils.syncBidirectionalLinks(
+        storage: _storage,
+        sourceIri: targetIri,
+        oldDataset: MemoryDataset(),
+        newDataset: created,
+        forwardPredicate: Vocab.employee,
+        reversePredicate: Vocab.worksFor,
+      );
+
       return TransportResponse(
         statusCode: 201,
         body: nQuadsCodec.encode(created),
@@ -113,6 +124,16 @@ class OrganizationController {
         requestDataset,
         updatePredicates: updatePredicates,
       );
+
+      await LinkSyncUtils.syncBidirectionalLinks(
+        storage: _storage,
+        sourceIri: targetIri,
+        oldDataset: existing,
+        newDataset: result,
+        forwardPredicate: Vocab.employee,
+        reversePredicate: Vocab.worksFor,
+      );
+
       return TransportResponse(
         statusCode: 200,
         body: nQuadsCodec.encode(result),
@@ -131,6 +152,16 @@ class OrganizationController {
       }
 
       await _storage.deleteResource(targetIri);
+
+      await LinkSyncUtils.syncBidirectionalLinks(
+        storage: _storage,
+        sourceIri: targetIri,
+        oldDataset: existing,
+        newDataset: MemoryDataset(), // Empty dataset means all removed
+        forwardPredicate: Vocab.employee,
+        reversePredicate: Vocab.worksFor,
+      );
+
       return const TransportResponse(statusCode: 204);
     } catch (e) {
       return const TransportResponse(statusCode: 500);

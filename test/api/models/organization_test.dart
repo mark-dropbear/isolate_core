@@ -30,6 +30,7 @@ void main() {
         'legalName': 'Global NGO Inc.',
         'description': 'Helps people.',
         'url': 'https://globalngo.org',
+        'employees': <String>[],
       };
       
       final org = Organization.fromJson(json);

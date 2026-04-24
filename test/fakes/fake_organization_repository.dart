@@ -25,7 +25,7 @@ class FakeOrganizationRepository implements OrganizationRepository {
 
   @override
   Future<Organization> createOrganization(
-      String displayName, OrganizationType type, String legalName, String description, String url) async {
+      String displayName, OrganizationType type, String legalName, String description, String url, {List<String> employees = const []}) async {
     final newOrganization = Organization(
       name: ResourceName.generate('organizations').toString(),
       displayName: displayName,
@@ -33,6 +33,7 @@ class FakeOrganizationRepository implements OrganizationRepository {
       legalName: legalName,
       description: description,
       url: url,
+      employees: employees,
     );
     _organizations.add(newOrganization);
     return newOrganization;

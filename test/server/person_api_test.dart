@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isolate_core/api/models/organization.dart';
 import 'package:isolate_core/api/models/person.dart';
 import 'package:isolate_core/api/models/vocab.dart';
 import 'package:isolate_core/server/api_server.dart';
@@ -20,31 +21,48 @@ void main() {
       apiServer = ApiServer(storage: storage);
     });
 
-    test('POST /persons creates a new person', () async {
-      final person = Person(name: '', givenName: 'John', familyName: 'Doe');
-      final req = TransportRequest(
+    test('POST /persons creates bidirectional worksFor link', () async {
+      // 1. Create org
+      final org = Organization(name: '', displayName: 'Acme Corp');
+      final createOrgReq = TransportRequest(
+        method: 'POST',
+        path: '/organizations',
+        body: nQuadsCodec.encode(org.toDataset()),
+      );
+      final createOrgRes = await apiServer.handleRequest(createOrgReq);
+      final orgDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(createOrgRes.body as String),
+      );
+      final orgName = Vocab.getResourceName(
+        orgDataset.map((q) => q.graph).whereType<NamedNode>().first,
+      );
+
+      // 2. Create person working for org
+      final person = Person(name: '', givenName: 'John', familyName: 'Doe', worksFor: [orgName]);
+      final createPersonReq = TransportRequest(
         method: 'POST',
         path: '/persons',
         body: nQuadsCodec.encode(person.toDataset()),
       );
-
-      final response = await apiServer.handleRequest(req);
-
-      expect(response.statusCode, 201);
-      final dataset = MemoryDataset.fromIterable(
-        nQuadsCodec.decode(response.body as String),
+      final createPersonRes = await apiServer.handleRequest(createPersonReq);
+      
+      expect(createPersonRes.statusCode, 201);
+      final personDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(createPersonRes.body as String),
+      );
+      final personName = Vocab.getResourceName(
+        personDataset.map((q) => q.graph).whereType<NamedNode>().first,
       );
 
-      final graphNameNode = dataset
-          .map((q) => q.graph)
-          .whereType<NamedNode>()
-          .first;
-      final createdName = Vocab.getResourceName(graphNameNode);
-      expect(createdName, startsWith('persons/'));
-
-      final createdPerson = Person.fromDataset(dataset, createdName);
-      expect(createdPerson.givenName, 'John');
-      expect(createdPerson.familyName, 'Doe');
+      // 3. Verify Org has employee
+      final getOrgReq = TransportRequest(method: 'GET', path: '/$orgName');
+      final getOrgRes = await apiServer.handleRequest(getOrgReq);
+      final updatedOrgDataset = MemoryDataset.fromIterable(
+        nQuadsCodec.decode(getOrgRes.body as String),
+      );
+      final updatedOrg = Organization.fromDataset(updatedOrgDataset, orgName);
+      
+      expect(updatedOrg.employees, contains(personName));
     });
 
     test('GET /persons returns list of persons', () async {

@@ -14,6 +14,7 @@ class SaveOrganizationUseCase {
         organization.legalName,
         organization.description,
         organization.url,
+        employees: organization.employees,
       );
     } else {
       return _repository.updateOrganization(organization);

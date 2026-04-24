@@ -50,6 +50,8 @@ class OrganizationDetailScreen extends StatelessWidget {
                 _buildDetailRow(context, 'Resource Name', organization.name),
                 _buildDetailRow(context, 'Legal Name', organization.legalName.isNotEmpty ? organization.legalName : 'Not specified'),
                 _buildDetailRow(context, 'Description', organization.description.isNotEmpty ? organization.description : 'Not specified'),
+                if (organization.employees.isNotEmpty)
+                  _buildDetailRow(context, 'Employees', organization.employees.join(', ')),
                 if (organization.url.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

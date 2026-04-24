@@ -6,12 +6,14 @@ class Person {
   final String givenName;
   final String familyName;
   final String jobTitle;
+  final List<String> worksFor; // List of Organization resource names
 
   Person({
     required this.name,
     this.givenName = '',
     this.familyName = '',
     this.jobTitle = '',
+    this.worksFor = const [],
   }) {
     if (givenName.isEmpty && familyName.isEmpty && jobTitle.isEmpty) {
       throw ArgumentError('A Person must have at least one field (givenName, familyName, or jobTitle) populated.');
@@ -24,6 +26,10 @@ class Person {
       givenName: json['givenName'] as String? ?? '',
       familyName: json['familyName'] as String? ?? '',
       jobTitle: json['jobTitle'] as String? ?? '',
+      worksFor: (json['worksFor'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -33,6 +39,7 @@ class Person {
       'givenName': givenName,
       'familyName': familyName,
       'jobTitle': jobTitle,
+      'worksFor': worksFor,
     };
   }
 
@@ -73,11 +80,20 @@ class Person {
         ? (jobTitles.first.object as Literal).value
         : '';
 
+    final worksForTriples = graph.match(
+      subject: subject,
+      predicate: Vocab.worksFor,
+    );
+    final worksFor = worksForTriples
+        .map((t) => Vocab.getResourceName(t.object as NamedNode))
+        .toList();
+
     return Person(
       name: name,
       givenName: givenName,
       familyName: familyName,
       jobTitle: jobTitle,
+      worksFor: worksFor,
     );
   }
 
@@ -128,6 +144,17 @@ class Person {
       );
     }
 
+    for (final orgName in worksFor) {
+      dataset.add(
+        Quad(
+          subject: subject,
+          predicate: Vocab.worksFor,
+          object: Vocab.getResourceIri(orgName),
+          graph: graphName,
+        ),
+      );
+    }
+
     return dataset;
   }
 
@@ -136,12 +163,14 @@ class Person {
     String? givenName,
     String? familyName,
     String? jobTitle,
+    List<String>? worksFor,
   }) {
     return Person(
       name: name ?? this.name,
       givenName: givenName ?? this.givenName,
       familyName: familyName ?? this.familyName,
       jobTitle: jobTitle ?? this.jobTitle,
+      worksFor: worksFor ?? this.worksFor,
     );
   }
 }

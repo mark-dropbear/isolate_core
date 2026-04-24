@@ -31,6 +31,8 @@ class Vocab {
   static final jobTitle = NamedNode('${schemaPrefix}jobTitle');
   static final legalName = NamedNode('${schemaPrefix}legalName');
   static final url = NamedNode('${schemaPrefix}url');
+  static final worksFor = NamedNode('${schemaPrefix}worksFor');
+  static final employee = NamedNode('${schemaPrefix}employee');
 
   // Action Statuses
   static final completedActionStatus =
@@ -85,6 +87,12 @@ class Vocab {
           break;
         case 'url':
           predicates.add(url);
+          break;
+        case 'worksFor':
+          predicates.add(worksFor);
+          break;
+        case 'employee':
+          predicates.add(employee);
           break;
       }
     }

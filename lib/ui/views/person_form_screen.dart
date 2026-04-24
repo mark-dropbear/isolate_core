@@ -21,6 +21,7 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
   late final TextEditingController _givenNameController;
   late final TextEditingController _familyNameController;
   late final TextEditingController _jobTitleController;
+  final Set<String> _selectedOrganizations = {};
 
   @override
   void initState() {
@@ -31,6 +32,8 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
         TextEditingController(text: widget.person?.familyName ?? '');
     _jobTitleController =
         TextEditingController(text: widget.person?.jobTitle ?? '');
+    _selectedOrganizations.addAll(widget.person?.worksFor ?? []);
+    widget.viewModel.loadAvailableOrganizations();
   }
 
   @override
@@ -52,7 +55,7 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
       body: ListenableBuilder(
         listenable: widget.viewModel,
         builder: (context, child) {
-          return Padding(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -95,7 +98,32 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
                   textCapitalization: TextCapitalization.words,
                   enabled: !widget.viewModel.isSaving,
                 ),
+                const SizedBox(height: 16),
+                const Text('Works For', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
+                if (widget.viewModel.availableOrganizations.isEmpty)
+                  const Text('No organizations available.')
+                else
+                  Wrap(
+                    spacing: 8.0,
+                    children: widget.viewModel.availableOrganizations.map((org) {
+                      final isSelected = _selectedOrganizations.contains(org.name);
+                      return FilterChip(
+                        label: Text(org.displayName),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              _selectedOrganizations.add(org.name);
+                            } else {
+                              _selectedOrganizations.remove(org.name);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                const SizedBox(height: 24),
                 Text(
                   'Note: At least one field must be populated.',
                   style: Theme.of(context).textTheme.bodySmall,
@@ -110,6 +138,7 @@ class _PersonFormScreenState extends State<PersonFormScreen> {
                             givenName: _givenNameController.text,
                             familyName: _familyNameController.text,
                             jobTitle: _jobTitleController.text,
+                            worksFor: _selectedOrganizations.toList(),
                           );
                           if (saved != null && context.mounted) {
                             context.pop();

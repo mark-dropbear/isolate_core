@@ -12,6 +12,7 @@ class SavePersonUseCase {
         person.givenName,
         person.familyName,
         person.jobTitle,
+        worksFor: person.worksFor,
       );
     } else {
       return _repository.updatePerson(person);

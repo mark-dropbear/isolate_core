@@ -24,12 +24,13 @@ class FakePersonRepository implements PersonRepository {
   }
 
   @override
-  Future<Person> createPerson(String givenName, String familyName, String jobTitle) async {
+  Future<Person> createPerson(String givenName, String familyName, String jobTitle, {List<String> worksFor = const []}) async {
     final newPerson = Person(
       name: ResourceName.generate('persons').toString(),
       givenName: givenName,
       familyName: familyName,
       jobTitle: jobTitle,
+      worksFor: worksFor,
     );
     _persons.add(newPerson);
     return newPerson;

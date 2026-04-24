@@ -23,6 +23,7 @@ class _OrganizationFormScreenState extends State<OrganizationFormScreen> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _urlController;
   late OrganizationType _selectedType;
+  final Set<String> _selectedEmployees = {};
 
   @override
   void initState() {
@@ -35,6 +36,8 @@ class _OrganizationFormScreenState extends State<OrganizationFormScreen> {
         TextEditingController(text: widget.organization?.description ?? '');
     _urlController = TextEditingController(text: widget.organization?.url ?? '');
     _selectedType = widget.organization?.type ?? OrganizationType.organization;
+    _selectedEmployees.addAll(widget.organization?.employees ?? []);
+    widget.viewModel.loadAvailablePersons();
   }
 
   @override
@@ -136,6 +139,35 @@ class _OrganizationFormScreenState extends State<OrganizationFormScreen> {
                   keyboardType: TextInputType.url,
                   enabled: !widget.viewModel.isSaving,
                 ),
+                const SizedBox(height: 16),
+                const Text('Employees', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                if (widget.viewModel.availablePersons.isEmpty)
+                  const Text('No persons available.')
+                else
+                  Wrap(
+                    spacing: 8.0,
+                    children: widget.viewModel.availablePersons.map((person) {
+                      final isSelected = _selectedEmployees.contains(person.name);
+                      final title = [person.givenName, person.familyName]
+                          .where((s) => s.isNotEmpty)
+                          .join(' ');
+                      final displayTitle = title.isNotEmpty ? title : person.name.split('/').last;
+                      return FilterChip(
+                        label: Text(displayTitle),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              _selectedEmployees.add(person.name);
+                            } else {
+                              _selectedEmployees.remove(person.name);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: widget.viewModel.isSaving
@@ -148,6 +180,7 @@ class _OrganizationFormScreenState extends State<OrganizationFormScreen> {
                             legalName: _legalNameController.text,
                             description: _descriptionController.text,
                             url: _urlController.text,
+                            employees: _selectedEmployees.toList(),
                           );
                           if (saved != null && context.mounted) {
                             context.pop();

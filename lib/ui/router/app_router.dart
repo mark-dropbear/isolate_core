@@ -85,8 +85,8 @@ GoRouter createAppRouter({
   );
 
   final thingDetailViewModel = ThingDetailViewModel(saveThingUseCase);
-  final personFormViewModel = PersonFormViewModel(savePersonUseCase);
-  final organizationFormViewModel = OrganizationFormViewModel(saveOrganizationUseCase);
+  final personFormViewModel = PersonFormViewModel(savePersonUseCase, getOrganizationsUseCase);
+  final organizationFormViewModel = OrganizationFormViewModel(saveOrganizationUseCase, getPersonsUseCase);
 
   return GoRouter(
     initialLocation: '/',

@@ -29,6 +29,7 @@ void main() {
         'givenName': 'Alice',
         'familyName': 'Smith',
         'jobTitle': 'Manager',
+        'worksFor': <String>[],
       };
       
       final person = Person.fromJson(json);

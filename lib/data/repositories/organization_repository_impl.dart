@@ -25,7 +25,7 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<Organization> createOrganization(
-      String displayName, OrganizationType type, String legalName, String description, String url) async {
+      String displayName, OrganizationType type, String legalName, String description, String url, {List<String> employees = const []}) async {
     _logger.info('createOrganization()');
     final organization = Organization(
       name: '',
@@ -34,6 +34,7 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
       legalName: legalName,
       description: description,
       url: url,
+      employees: employees,
     );
     return _apiService.createOrganization(CreateOrganizationRequest(organization: organization));
   }
@@ -44,7 +45,7 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
     return _apiService.updateOrganization(
       UpdateOrganizationRequest(
         organization: organization,
-        updateMask: ['name', 'type', 'legalName', 'description', 'url'],
+        updateMask: ['name', 'type', 'legalName', 'description', 'url', 'employee'],
       ),
     );
   }

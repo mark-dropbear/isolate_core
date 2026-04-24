@@ -41,6 +41,8 @@ class PersonDetailScreen extends StatelessWidget {
                 _buildDetailRow(context, 'Given Name', person.givenName.isNotEmpty ? person.givenName : 'Not specified'),
                 _buildDetailRow(context, 'Family Name', person.familyName.isNotEmpty ? person.familyName : 'Not specified'),
                 _buildDetailRow(context, 'Job Title', person.jobTitle.isNotEmpty ? person.jobTitle : 'Not specified'),
+                if (person.worksFor.isNotEmpty)
+                  _buildDetailRow(context, 'Works For', person.worksFor.join(', ')),
               ],
             ),
           ),
