@@ -5,11 +5,14 @@ import 'package:isolate_core/api/models/task.dart';
 void main() {
   group('Task', () {
     test('toJson and fromJson work correctly', () {
-      const task = Task(
+      final task = Task(
         name: 'tasks/T1',
         displayName: 'My Task',
         description: 'Test description',
         actionStatus: 'https://schema.org/CompletedActionStatus',
+        instruments: const ['things/1'],
+        agents: const ['persons/1'],
+        endTime: DateTime.utc(2023, 1, 1),
       );
 
       final json = task.toJson();
@@ -19,14 +22,20 @@ void main() {
       expect(fromJson.displayName, task.displayName);
       expect(fromJson.description, task.description);
       expect(fromJson.actionStatus, task.actionStatus);
+      expect(fromJson.instruments, contains('things/1'));
+      expect(fromJson.agents, contains('persons/1'));
+      expect(fromJson.endTime, DateTime.utc(2023, 1, 1));
       expect(fromJson.isCompleted, isTrue);
     });
 
     test('toDataset and fromDataset work correctly', () {
-      const task = Task(
+      final task = Task(
         name: 'tasks/T1',
         displayName: 'My Task',
         description: 'Test description',
+        instruments: const ['things/1'],
+        agents: const ['organizations/1'],
+        endTime: DateTime.utc(2023, 1, 1),
       );
 
       final dataset = task.toDataset();
@@ -36,6 +45,9 @@ void main() {
       expect(fromDataset.displayName, task.displayName);
       expect(fromDataset.description, task.description);
       expect(fromDataset.actionStatus, task.actionStatus);
+      expect(fromDataset.instruments, contains('things/1'));
+      expect(fromDataset.agents, contains('organizations/1'));
+      expect(fromDataset.endTime, DateTime.utc(2023, 1, 1));
     });
 
     test('fromDataset handles empty graph gracefully', () {

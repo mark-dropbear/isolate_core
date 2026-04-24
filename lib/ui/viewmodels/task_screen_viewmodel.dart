@@ -2,10 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import '../../api/models/task.dart';
 import '../../api/models/thing.dart';
+import '../../api/models/person.dart';
+import '../../api/models/organization.dart';
 import '../../domain/usecases/get_tasks_for_list_usecase.dart';
 import '../../domain/usecases/save_task_usecase.dart';
 import '../../domain/usecases/add_task_to_list_usecase.dart';
 import '../../domain/usecases/get_things_usecase.dart';
+import '../../domain/usecases/get_persons_usecase.dart';
+import '../../domain/usecases/get_organizations_usecase.dart';
 
 class TaskScreenViewModel extends ChangeNotifier {
   final _logger = Logger('TaskScreenViewModel');
@@ -13,9 +17,13 @@ class TaskScreenViewModel extends ChangeNotifier {
   final SaveTaskUseCase _saveTask;
   final AddTaskToListUseCase _addTaskToList;
   final GetThingsUseCase _getThings;
+  final GetPersonsUseCase _getPersons;
+  final GetOrganizationsUseCase _getOrganizations;
 
   List<Task> tasks = [];
   List<Thing> availableThings = [];
+  List<Person> availablePersons = [];
+  List<Organization> availableOrganizations = [];
   bool isLoading = false;
   String? error;
 
@@ -24,6 +32,8 @@ class TaskScreenViewModel extends ChangeNotifier {
     this._saveTask,
     this._addTaskToList,
     this._getThings,
+    this._getPersons,
+    this._getOrganizations,
   );
 
   Future<void> loadTasks(String listName) async {
@@ -54,13 +64,25 @@ class TaskScreenViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> addTask(String listName, String displayName, {List<String> instruments = const []}) async {
+  Future<void> loadAvailableAgents() async {
+    _logger.info('Loading available agents for task creation');
+    try {
+      availablePersons = await _getPersons();
+      availableOrganizations = await _getOrganizations();
+      notifyListeners();
+    } catch (e, stackTrace) {
+      _logger.severe('Failed to load agents', e, stackTrace);
+    }
+  }
+
+  Future<void> addTask(String listName, String displayName, {List<String> instruments = const [], List<String> agents = const []}) async {
     _logger.info('Adding task $displayName to list $listName');
     try {
       await _addTaskToList(
         listName: listName,
         displayName: displayName,
         instruments: instruments,
+        agents: agents,
       );
       await loadTasks(listName); // Refresh list
     } catch (e, stackTrace) {

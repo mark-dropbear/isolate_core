@@ -23,6 +23,7 @@ class _TaskScreenState extends State<TaskScreen> {
     super.initState();
     widget.viewModel.loadTasks(widget.listName);
     widget.viewModel.loadAvailableThings();
+    widget.viewModel.loadAvailableAgents();
   }
 
   @override
@@ -82,7 +83,31 @@ class _TaskScreenState extends State<TaskScreen> {
                           // Simple lookup for display name from available things
                           final thing = widget.viewModel.availableThings.where((t) => t.name == instrumentName).firstOrNull;
                           return Chip(
+                            avatar: const Icon(Icons.build, size: 16),
                             label: Text(thing?.displayName ?? instrumentName.split('/').last),
+                            visualDensity: VisualDensity.compact,
+                          );
+                        }).toList(),
+                      ),
+                    if (task.agents.isNotEmpty)
+                      Wrap(
+                        spacing: 4.0,
+                        children: task.agents.map((agentName) {
+                          // Combine searches for agent display name
+                          final person = widget.viewModel.availablePersons.where((p) => p.name == agentName).firstOrNull;
+                          final org = widget.viewModel.availableOrganizations.where((o) => o.name == agentName).firstOrNull;
+                          String display = agentName.split('/').last;
+                          IconData icon = Icons.person;
+                          if (person != null) {
+                            display = [person.givenName, person.familyName].where((s) => s.isNotEmpty).join(' ');
+                            if (display.isEmpty) display = 'Unknown Person';
+                          } else if (org != null) {
+                            display = org.displayName;
+                            icon = Icons.business;
+                          }
+                          return Chip(
+                            avatar: Icon(icon, size: 16),
+                            label: Text(display),
                             visualDensity: VisualDensity.compact,
                           );
                         }).toList(),
@@ -127,6 +152,7 @@ class CreateTaskDialog extends StatefulWidget {
 class _CreateTaskDialogState extends State<CreateTaskDialog> {
   final _nameController = TextEditingController();
   final Set<String> _selectedInstruments = {};
+  final Set<String> _selectedAgents = {};
 
   @override
   void dispose() {
@@ -176,6 +202,53 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                       );
                     }).toList(),
                   ),
+                const SizedBox(height: 16),
+                const Text('Agents', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                if (widget.viewModel.availablePersons.isEmpty && widget.viewModel.availableOrganizations.isEmpty)
+                  const Text('No agents available to select.')
+                else
+                  Wrap(
+                    spacing: 8.0,
+                    children: [
+                      ...widget.viewModel.availablePersons.map((person) {
+                        final isSelected = _selectedAgents.contains(person.name);
+                        final title = [person.givenName, person.familyName].where((s) => s.isNotEmpty).join(' ');
+                        final displayTitle = title.isNotEmpty ? title : person.name.split('/').last;
+                        return FilterChip(
+                          avatar: const Icon(Icons.person, size: 18),
+                          label: Text(displayTitle),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedAgents.add(person.name);
+                              } else {
+                                _selectedAgents.remove(person.name);
+                              }
+                            });
+                          },
+                        );
+                      }),
+                      ...widget.viewModel.availableOrganizations.map((org) {
+                        final isSelected = _selectedAgents.contains(org.name);
+                        return FilterChip(
+                          avatar: const Icon(Icons.business, size: 18),
+                          label: Text(org.displayName),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedAgents.add(org.name);
+                              } else {
+                                _selectedAgents.remove(org.name);
+                              }
+                            });
+                          },
+                        );
+                      }),
+                    ],
+                  ),
               ],
             );
           },
@@ -193,6 +266,7 @@ class _CreateTaskDialogState extends State<CreateTaskDialog> {
                 widget.listName,
                 _nameController.text,
                 instruments: _selectedInstruments.toList(),
+                agents: _selectedAgents.toList(),
               );
             }
             Navigator.pop(context);

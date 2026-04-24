@@ -24,13 +24,14 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<Task> createTask(String displayName, {String description = '', List<String> instruments = const []}) async {
+  Future<Task> createTask(String displayName, {String description = '', List<String> instruments = const [], List<String> agents = const []}) async {
     _logger.info('createTask($displayName)');
     final task = Task(
       name: '',
       displayName: displayName,
       description: description,
       instruments: instruments,
+      agents: agents,
     );
     return _apiService.createTask(CreateTaskRequest(task: task));
   }
@@ -41,7 +42,7 @@ class TaskRepositoryImpl implements TaskRepository {
     return _apiService.updateTask(
       UpdateTaskRequest(
         task: task,
-        updateMask: ['name', 'description', 'actionStatus', 'instrument', 'endTime'],
+        updateMask: ['name', 'description', 'actionStatus', 'instrument', 'endTime', 'agent'],
       ),
     );
   }

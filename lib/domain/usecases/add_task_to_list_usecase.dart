@@ -12,12 +12,14 @@ class AddTaskToListUseCase {
     required String displayName,
     String description = '',
     List<String> instruments = const [],
+    List<String> agents = const [],
   }) async {
     // 1. Create the task
     final task = await _taskRepository.createTask(
       displayName,
       description: description,
       instruments: instruments,
+      agents: agents,
     );
 
     // 2. Determine next position (get existing tasks for list)

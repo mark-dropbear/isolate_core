@@ -8,6 +8,7 @@ class Task {
   final String actionStatus; // schema:CompletedActionStatus or PotentialActionStatus
   final List<String> instruments; // List of Thing resource names
   final DateTime? endTime;
+  final List<String> agents; // List of Person or Organization resource names
 
   const Task({
     required this.name,
@@ -16,6 +17,7 @@ class Task {
     this.actionStatus = 'https://schema.org/PotentialActionStatus',
     this.instruments = const [],
     this.endTime,
+    this.agents = const [],
   });
 
   bool get isCompleted =>
@@ -35,6 +37,10 @@ class Task {
       endTime: json['endTime'] != null
           ? DateTime.parse(json['endTime'] as String)
           : null,
+      agents: (json['agents'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -46,6 +52,7 @@ class Task {
       'actionStatus': actionStatus,
       'instruments': instruments,
       if (endTime != null) 'endTime': endTime!.toIso8601String(),
+      'agents': agents,
     };
   }
 
@@ -106,6 +113,14 @@ class Task {
         : null;
     final endTime = endTimeStr != null ? DateTime.tryParse(endTimeStr) : null;
 
+    final agentTriples = graph.match(
+      subject: subject,
+      predicate: Vocab.agent,
+    );
+    final agents = agentTriples
+        .map((t) => Vocab.getResourceName(t.object as NamedNode))
+        .toList();
+
     return Task(
       name: name,
       displayName: displayName,
@@ -113,6 +128,7 @@ class Task {
       actionStatus: actionStatus,
       instruments: instruments,
       endTime: endTime,
+      agents: agents,
     );
   }
 
@@ -181,6 +197,17 @@ class Task {
       );
     }
 
+    for (final agentName in agents) {
+      dataset.add(
+        Quad(
+          subject: subject,
+          predicate: Vocab.agent,
+          object: Vocab.getResourceIri(agentName),
+          graph: graphName,
+        ),
+      );
+    }
+
     return dataset;
   }
 
@@ -192,6 +219,7 @@ class Task {
     List<String>? instruments,
     DateTime? endTime,
     bool clearEndTime = false,
+    List<String>? agents,
   }) {
     return Task(
       name: name ?? this.name,
@@ -200,6 +228,7 @@ class Task {
       actionStatus: actionStatus ?? this.actionStatus,
       instruments: instruments ?? this.instruments,
       endTime: clearEndTime ? null : (endTime ?? this.endTime),
+      agents: agents ?? this.agents,
     );
   }
 }

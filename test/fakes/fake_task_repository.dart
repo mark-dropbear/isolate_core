@@ -24,12 +24,13 @@ class FakeTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<Task> createTask(String displayName, {String description = '', List<String> instruments = const []}) async {
+  Future<Task> createTask(String displayName, {String description = '', List<String> instruments = const [], List<String> agents = const []}) async {
     final newTask = Task(
       name: ResourceName.generate('tasks').toString(),
       displayName: displayName,
       description: description,
       instruments: instruments,
+      agents: agents,
     );
     _tasks.add(newTask);
     return newTask;

@@ -5,28 +5,38 @@ import 'package:isolate_core/domain/usecases/add_task_to_list_usecase.dart';
 import 'package:isolate_core/domain/usecases/get_tasks_for_list_usecase.dart';
 import 'package:isolate_core/domain/usecases/save_task_usecase.dart';
 import 'package:isolate_core/domain/usecases/get_things_usecase.dart';
+import 'package:isolate_core/domain/usecases/get_persons_usecase.dart';
+import 'package:isolate_core/domain/usecases/get_organizations_usecase.dart';
 import 'package:isolate_core/ui/viewmodels/task_screen_viewmodel.dart';
 
 import '../../fakes/fake_task_list_repository.dart';
 import '../../fakes/fake_task_repository.dart';
 import '../../fakes/fake_thing_repository.dart';
+import '../../fakes/fake_person_repository.dart';
+import '../../fakes/fake_organization_repository.dart';
 
 void main() {
   group('TaskScreenViewModel Tests', () {
     late FakeTaskRepository taskRepo;
     late FakeTaskListRepository listRepo;
     late FakeThingRepository thingRepo;
+    late FakePersonRepository personRepo;
+    late FakeOrganizationRepository orgRepo;
     late TaskScreenViewModel viewModel;
 
     setUp(() {
       taskRepo = FakeTaskRepository();
       listRepo = FakeTaskListRepository(taskRepo);
       thingRepo = FakeThingRepository();
+      personRepo = FakePersonRepository();
+      orgRepo = FakeOrganizationRepository();
       viewModel = TaskScreenViewModel(
         GetTasksForListUseCase(listRepo),
         SaveTaskUseCase(taskRepo),
         AddTaskToListUseCase(taskRepo, listRepo),
         GetThingsUseCase(thingRepo),
+        GetPersonsUseCase(personRepo),
+        GetOrganizationsUseCase(orgRepo),
       );
     });
 

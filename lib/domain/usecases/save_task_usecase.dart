@@ -12,6 +12,7 @@ class SaveTaskUseCase {
         task.displayName,
         description: task.description,
         instruments: task.instruments,
+        agents: task.agents,
       );
     } else {
       return _repository.updateTask(task);
