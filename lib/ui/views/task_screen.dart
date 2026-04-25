@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../viewmodels/task_screen_viewmodel.dart';
+import 'task_detail_screen.dart';
 
 class TaskScreen extends StatefulWidget {
   final TaskScreenViewModel viewModel;
@@ -60,6 +62,15 @@ class _TaskScreenState extends State<TaskScreen> {
             itemBuilder: (context, index) {
               final task = tasks[index];
               return ListTile(
+                onTap: () {
+                  final payload = TaskDetailPayload(
+                    task: task,
+                    availableThings: widget.viewModel.availableThings,
+                    availablePersons: widget.viewModel.availablePersons,
+                    availableOrganizations: widget.viewModel.availableOrganizations,
+                  );
+                  context.push('/tasks/${Uri.encodeComponent(widget.listName)}/detail', extra: payload);
+                },
                 leading: Checkbox(
                   value: task.isCompleted,
                   onChanged: (_) => widget.viewModel.toggleTaskStatus(task),
