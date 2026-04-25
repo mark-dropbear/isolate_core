@@ -11,14 +11,16 @@ class AppShell extends StatelessWidget {
     final String location = GoRouterState.of(context).matchedLocation;
     
     int selectedIndex = 0;
-    if (location.startsWith('/things')) {
+    if (location == '/') {
+      selectedIndex = 0;
+    } else if (location.startsWith('/lists') || location.startsWith('/tasks')) {
       selectedIndex = 1;
     } else if (location.startsWith('/persons')) {
       selectedIndex = 2;
     } else if (location.startsWith('/organizations')) {
       selectedIndex = 3;
-    } else {
-      selectedIndex = 0;
+    } else if (location.startsWith('/things')) {
+      selectedIndex = 4;
     }
 
     return Scaffold(
@@ -30,24 +32,26 @@ class AppShell extends StatelessWidget {
               if (index == 0) {
                 context.go('/');
               } else if (index == 1) {
-                context.go('/things');
+                context.go('/lists');
               } else if (index == 2) {
                 context.go('/persons');
               } else if (index == 3) {
                 context.go('/organizations');
+              } else if (index == 4) {
+                context.go('/things');
               }
             },
             labelType: NavigationRailLabelType.all,
             destinations: const [
               NavigationRailDestination(
-                icon: Icon(Icons.check_box_outlined),
-                selectedIcon: Icon(Icons.check_box),
-                label: Text('Tasks'),
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text('Home'),
               ),
               NavigationRailDestination(
-                icon: Icon(Icons.category_outlined),
-                selectedIcon: Icon(Icons.category),
-                label: Text('Things'),
+                icon: Icon(Icons.checklist_rtl_outlined),
+                selectedIcon: Icon(Icons.checklist_rtl),
+                label: Text('Tasks'),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.people_outline),
@@ -58,6 +62,11 @@ class AppShell extends StatelessWidget {
                 icon: Icon(Icons.business_outlined),
                 selectedIcon: Icon(Icons.business),
                 label: Text('Orgs'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.build_outlined),
+                selectedIcon: Icon(Icons.build),
+                label: Text('Things'),
               ),
             ],
           ),

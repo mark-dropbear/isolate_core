@@ -22,6 +22,8 @@ import 'package:isolate_core/ui/viewmodels/person_list_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/person_form_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/organization_list_viewmodel.dart';
 import 'package:isolate_core/ui/viewmodels/organization_form_viewmodel.dart';
+import 'package:isolate_core/ui/viewmodels/home_screen_viewmodel.dart';
+import 'package:isolate_core/ui/views/home_screen.dart';
 import 'package:isolate_core/ui/views/task_list_screen.dart';
 import 'package:isolate_core/ui/views/task_screen.dart';
 import 'package:isolate_core/ui/views/thing_list_screen.dart';
@@ -90,6 +92,13 @@ GoRouter createAppRouter({
   final thingDetailViewModel = ThingDetailViewModel(saveThingUseCase);
   final personFormViewModel = PersonFormViewModel(savePersonUseCase, getOrganizationsUseCase);
   final organizationFormViewModel = OrganizationFormViewModel(saveOrganizationUseCase, getPersonsUseCase);
+  
+  final homeScreenViewModel = HomeScreenViewModel(
+    getTaskListsUseCase,
+    getPersonsUseCase,
+    getOrganizationsUseCase,
+    getThingsUseCase,
+  );
 
   return GoRouter(
     initialLocation: '/',
@@ -101,6 +110,12 @@ GoRouter createAppRouter({
         routes: [
           GoRoute(
             path: '/',
+            builder: (context, state) => HomeScreen(
+              viewModel: homeScreenViewModel,
+            ),
+          ),
+          GoRoute(
+            path: '/lists',
             builder: (context, state) => TaskListScreen(
               viewModel: taskListViewModel,
             ),
