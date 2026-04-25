@@ -69,3 +69,11 @@ flutter test
 ## Future Extensibility
 
 Because of the architectural boundaries established in this project, migrating the `IsolateServer` to a real HTTP framework (e.g. Dart Frog, Shelf) requires zero changes to the `lib/server/controllers` or `lib/api` packages. Simply swap the Isolate Transport layer for a real HTTP server adapter, and deploy!
+
+## Ontology-Driven Architecture (Roadmap)
+
+As the application graph expands to include overarching categories like **Places**, **Events**, and **Creative Works**, the project is currently undergoing a strategic refactoring outlined in `future_plans.md`. This transition moves from hardcoded domain controllers to a scalable **Ontology-Driven Architecture**:
+- **GraphEdgeManager:** Declarative bidirectional edge syncing (e.g., `worksFor` <-> `employee`).
+- **Ontology-Mapped Entities:** Abstracting RDF serialization via mixins/macros.
+- **Generic Resource Controllers & Repositories:** Consolidating CRUD endpoints into unified graph queries (e.g., `getResourcesOfType`).
+- **Unified Graph Search:** Enabling the UI to look up linkable entities via `Rdf.type` instead of dedicated use cases.

@@ -48,6 +48,7 @@ The codebase is organized into discrete architectural boundaries to ensure a str
 ## Important Documentation Files
 
 - **`README.md`**: Architectural high-level overview.
+- **`future_plans.md`**: Strategic roadmap for transitioning to a scalable Ontology-Driven Architecture (GraphEdgeManager, Generic Resource Controllers).
 - **`RDF.md`**: Guide for the `rdf_dart` library and semantic data patterns.
 - **`resource_identifiers_guide.md`**: Deep dive into the AIP-122 identifier implementation.
 - **`aip/`**: Contains documentation for specific Google AIP standards implemented in this project.
